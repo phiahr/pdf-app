@@ -1,0 +1,61 @@
+<!-- index.html: Offline Web-App Starter (PDF + Signatur) -->
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="manifest.json" />
+    <meta name="theme-color" content="#0078D7" />
+    <title>Vorabgespräch PDF Tool</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- Link to external CSS -->
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <h1>Vorabgespräch</h1>
+    <form id="data-form">
+        <!-- <input type="text" id="first_name" placeholder="Vorname" required /> -->
+        <input type="text" id="first_name" placeholder="Vorname"  />
+        <input type="text" id="last_name" placeholder="Nachname"  />
+        <input type="text" id="birthdate" placeholder="Geburtsdatum"  />
+        <input type="text" id="insurance_number" placeholder="Versicherungsnummer"  />
+        <input type="text" id="product" placeholder="Baumaßnahme"  />
+        <input type="text" id="phone" placeholder="Telefonnummer"  />
+        <input type="text" id="email" placeholder="E-Mail"  />
+        <input type="text" id="street" placeholder="Straße"  />
+        <input type="text" id="zip" placeholder="PLZ"  />
+        <input type="text" id="city" placeholder="Ort"  />
+        <button type="submit">PDF generieren</button>
+    </form>
+
+    <h2>Unterschrift</h2>
+    <canvas id="signature-pad" width="300" height="150" style="border:1px solid #ccc"></canvas>
+    <button id="clear-signature">Unterschrift löschen</button>
+
+    <button id="save-pdf" disabled>PDF speichern</button>
+
+<!-- pdf-lib -->
+<script src="libs/pdf-lib.min.js"></script>
+
+<!-- signature_pad -->
+<!-- <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script> -->
+<script src="libs/signature_pad.min.js"></script>
+
+<!-- FileSaver -->
+<script src="libs/FileSaver.min.js"></script>
+
+    <script src="main.js"></script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(() => console.log('✅ Service Worker registriert'))
+      .catch(err => console.error('Service Worker Fehler:', err));
+  }
+</script>
+
+</body>
+
+</html>

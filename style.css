@@ -1,0 +1,69 @@
+/* style.css: Modernes Design für das PDF-Tool */
+
+body {
+    font-family: system-ui, sans-serif;
+    margin: 2rem;
+    background: #f9fafb;
+    color: #111827;
+    line-height: 1.6;
+}
+
+h1,
+h2 {
+    color: #1f2937;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-width: 400px;
+    background: #ffffff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+input {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+}
+
+button {
+    padding: 0.75rem;
+    background-color: #3b82f6;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background-color: #2563eb;
+}
+
+canvas {
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+#save-pdf:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+#clear-signature {
+    margin-top: 0.5rem;
+    background-color: #ef4444;
+}
+
+#clear-signature:hover {
+    background-color: #dc2626;
+}
