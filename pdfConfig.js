@@ -21,7 +21,7 @@ export function getPdfDefinitions() {
       applySignature: false
     },
     {
-      path: "assets/Auftragsbestätigung.pdf",
+      path: "assets/Auftragsbestaetigung.pdf",
       fields: (formData, formattedDate) => ({
         full_name: `${formData.first_name} ${formData.last_name}`,
         address: `${formData.street}, ${formData.zip_code} ${formData.city}`,

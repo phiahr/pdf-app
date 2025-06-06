@@ -9,7 +9,7 @@ const ASSETS_TO_CACHE = [
     '/libs/signature_pad.min.js',
     '/libs/FileSaver.min.js',
     '/assets/stammblatt.pdf',
-    '/assets/Auftragsbestätigung.pdf',
+    '/assets/Auftragsbestaetigung.pdf',
     '/assets/Annahme.pdf',
     '/assets/Datenschutz.pdf',
     '/assets/AGB.pdf',
