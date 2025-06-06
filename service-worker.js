@@ -11,6 +11,9 @@ const ASSETS_TO_CACHE = [
     '/assets/stammblatt.pdf',
     '/assets/Auftragsbestätigung.pdf',
     '/assets/Annahme.pdf',
+    '/assets/Datenschutz.pdf',
+    '/assets/AGB.pdf',
+    '/assets/Vollmacht.pdf',
     '/icons/icon-192.png',
     '/icons/icon-512.png',
 ];
