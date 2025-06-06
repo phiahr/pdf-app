@@ -103,22 +103,11 @@ async function loadAndFillForm(path, fields) {
     const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
     const form = pdfDoc.getForm();
 
-    // const availableFields = form.getFields().map(f => f.getName());
-
-    // for (const [key, value] of Object.entries(fields)) {
-    //     console.log(`Filling field: ${key} with value: ${value}`);
-    //     if (availableFields.includes(key)) {
-    //         form.getTextField(key).setText(value);
-    //     }
-    // }
-
     const pdfFields = form.getFields();
 
     for (const pdfField of pdfFields) {
         const name = pdfField.getName();
         const type = pdfField.constructor.name; // Detect type: PDFTextField, PDFCheckBox, etc.
-
-        // console.log(`Setting field "${name}" (type: ${type})`);
 
         if (!(name in fields)) continue; // Skip if not in provided data
 
@@ -130,6 +119,7 @@ async function loadAndFillForm(path, fields) {
             // if count in name, set the alignment to right
             if (name.includes('count')) {
                 form.getTextField(name).setAlignment(PDFLib.TextAlignment.Right);
+                // form.getTextField(name).setFontSize(10); // Adjust font size if needed
             }
             
         } else if (type === 'e') {

@@ -1,19 +1,19 @@
 /* style.css: Modernes Design für das PDF-Tool */
 
-body {
+/* body {
     font-family: system-ui, sans-serif;
     margin: 2rem;
     background: #f9fafb;
     color: #111827;
     line-height: 1.6;
-}
+} */
 
 h1,
 h2 {
     color: #1f2937;
 }
 
-form {
+/* form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -23,7 +23,65 @@ form {
     border-radius: 1rem;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     margin-bottom: 2rem;
+} */
+
+/* Center everything in the viewport */
+body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    background: #f9fafb;
+    color: #111827;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+    box-sizing: border-box;
 }
+
+form {
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 900px;
+    width: 100%;
+}
+
+.form-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Side-by-side layout on wider screens */
+@media screen and (min-width: 900px) {
+    .form-sections {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+}
+
+.personal-info,
+.services {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.services fieldset {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.75rem;
+    background-color: #fefefe;
+}
+
 
 /* .form-sections {
     display: flex;
