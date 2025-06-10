@@ -6,7 +6,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="manifest.json" />
-    <meta name="theme-color" content="#0078D7" />
+    <!-- <meta name="theme-color" content="#0078D7" /> -->
+    <meta name="theme-color" content="#1d3946" />
     <title>Vorabgespräch PDF Tool</title>
     <!-- Link to external CSS -->
     <link rel="stylesheet" href="style.css" />
@@ -14,127 +15,151 @@
 
 <body>
     <main class="content">
-
-        <h1>Vorabgespräch</h1>
+        <header class="hero">
+            <div class="hero-content">
+                <img src="icons/icon-512.png" alt="Logo" class="logo" />
+                <h1>Vorabgespräch</h1>
+            </div>
+        </header>
+        <!-- <h1>Vorabgespräch</h1> -->
         <form id="data-form">
             <div class="form-sections">
                 <div class="personal-info">
-            <!-- <input type="text" id="first_name" placeholder="Vorname" required /> -->
-            <!-- Radio box if man or woman -->
-            <div>
-                <label>Geschlecht:</label><br>
-                <input type="radio" id="gender_male" name="gender" value="Mann">
-                <label for="gender_male">Mann</label><br>
-                <input type="radio" id="gender_female" name="gender" value="Frau">
-                <label for="gender_female">Frau</label>
-            </div>
+                    <!-- <input type="text" id="first_name" placeholder="Vorname" required /> -->
+                    <!-- Radio box if man or woman -->
+                    <div>
+                        <label>Geschlecht:</label><br>
+                        <div class="gender-options">
+                            <input type="radio" id="gender_male" name="gender" value="Mann">
+                            <label for="gender_male">Mann</label><br>
+                            <input type="radio" id="gender_female" name="gender" value="Frau">
+                            <label for="gender_female">Frau</label>
+                        </div>
+                    </div>
 
-            <input type="text" id="first_name" placeholder="Vorname" />
-            <input type="text" id="last_name" placeholder="Nachname" />
-            <input type="text" id="birthdate" placeholder="Geburtsdatum" />
-            <input type="text" id="insurance_number" placeholder="Versicherungsnummer" />
-            <!-- <input type="text" id="insurance_provider" placeholder="Versicherung" /> -->
-            <select id="insurance_provider">
-                <option value="">Versicherung auswählen</option>
-                <option value="AOK">AOK</option>
-                <option value="TK">TK (Techniker Krankenkasse)</option>
-                <option value="Barmer">Barmer</option>
-                <option value="DAK">DAK</option>
-                <option value="BKK">BKK</option>
-                <option value="IKK">IKK</option>
-                <option value="KKH">KKH</option>
-                <option value="Andere">Andere</option>
-            </select>
+                    <input type="text" id="first_name" placeholder="Vorname" />
+                    <input type="text" id="last_name" placeholder="Nachname" />
+                    <input type="text" id="birthdate" placeholder="Geburtsdatum" />
+                    <input type="text" id="insurance_number" placeholder="Versicherungsnummer" />
+                    <!-- <input type="text" id="insurance_provider" placeholder="Versicherung" /> -->
+                    <select id="insurance_provider">
+                        <option value="">Versicherung auswählen</option>
+                        <option value="AOK">AOK</option>
+                        <option value="TK">TK (Techniker Krankenkasse)</option>
+                        <option value="Barmer">Barmer</option>
+                        <option value="DAK">DAK</option>
+                        <option value="BKK">BKK</option>
+                        <option value="IKK">IKK</option>
+                        <option value="KKH">KKH</option>
+                        <option value="Andere">Andere</option>
+                    </select>
 
-<!-- Hidden by default -->
-<input type="text" id="insurance_provider_other" placeholder="Bitte Versicherung angeben" style="display: none; margin-top: 0.5rem;" />
+                    <!-- Hidden by default -->
+                    <input type="text" id="insurance_provider_other" placeholder="Bitte Versicherung angeben"
+                        style="display: none; margin-top: 0.5rem;" />
 
-            <!-- <input type="text" id="product" placeholder="Baumaßnahme" /> -->
-            <input type="text" id="phone" placeholder="Telefonnummer" />
-            <input type="text" id="email" placeholder="E-Mail" />
-            <input type="text" id="street" placeholder="Straße" />
-            <input type="text" id="zip" placeholder="PLZ" />
-            <input type="text" id="city" placeholder="Ort" />
-            </div>
+                    <!-- <input type="text" id="product" placeholder="Baumaßnahme" /> -->
+                    <input type="text" id="phone" placeholder="Telefonnummer" />
+                    <input type="text" id="email" placeholder="E-Mail" />
+                    <input type="text" id="street" placeholder="Straße" />
+                    <input type="text" id="zip" placeholder="PLZ" />
+                    <input type="text" id="city" placeholder="Ort" />
+                </div>
                 <div class="products">
-            <fieldset>
-                <legend><strong>Gewünschte Leistung:</strong></legend>
+                    <fieldset>
+                        <legend><strong>Gewünschte Leistung:</strong></legend>
 
-                <!-- Haltegriffe / Geländer -->
-                <label><input type="checkbox" name="grab_bars" /> Haltegriffe / Haltestangen: </label>
-                <input type="number" name="grab_bars_count" min="0" placeholder="Stück" style="width: 60px;" />
-                <br />
-                <label><input type="checkbox" name="railings" /> Geländer: </label>
-                <input type="number" name="railings_count" min="0" placeholder="Stück" style="width: 60px;" />
-                <br /><br />
+                        <!-- Haltegriffe / Geländer -->
+                        <label><input type="checkbox" name="grab_bars" /> Haltegriffe / Haltestangen: </label>
+                        <input type="number" name="grab_bars_count" min="0" placeholder="Stück" style="width: 60px;" />
+                        <br />
+                        <label><input type="checkbox" name="railings" /> Geländer: </label>
+                        <input type="number" name="railings_count" min="0" placeholder="Stück" style="width: 60px;" />
+                        <br /><br />
 
-                <!-- Erhöhtes WC -->
-                <label><input type="checkbox" name="raised_toilet" />Erhöhtes WC:</label>
-                <label><input type="radio" name="raised_toilet_type" value="stand" /> Stand</label>
-                <label><input type="radio" name="raised_toilet_type" value="wall" /> Wand</label>
-                <br />
+                        <!-- Erhöhtes WC -->
+                        <label><input type="checkbox" name="raised_toilet" />Erhöhtes WC:</label>
+                        <label><input type="radio" name="raised_toilet_type" value="stand" /> Stand</label>
+                        <label><input type="radio" name="raised_toilet_type" value="wall" /> Wand</label>
+                        <br />
 
-                <!-- Eckventil -->
-                <label><input type="checkbox" name="angle_valve" />Eckventil:</label>
-                <label><input type="radio" name="angle_valve_type" value="inside" /> innen</label>
-                <label><input type="radio" name="angle_valve_type" value="outside" /> außen</label>
-                <br />
+                        <!-- Eckventil -->
+                        <label><input type="checkbox" name="angle_valve" />Eckventil:</label>
+                        <label><input type="radio" name="angle_valve_type" value="inside" /> innen</label>
+                        <label><input type="radio" name="angle_valve_type" value="outside" /> außen</label>
+                        <br />
 
-                <!-- Dusch-WC -->
-                <label><input type="checkbox" name="shower_toilet" />Dusch-WC</label>
-                <br />
+                        <!-- Dusch-WC -->
+                        <label><input type="checkbox" name="shower_toilet" />Dusch-WC</label>
+                        <br />
 
-                <!-- Türschwellen / Rampen -->
-                <label><input type="checkbox" name="threshold_removal" /> Türschwellen entfernen:</label>
-                <input type="number" name="threshold_removal_count" min="0" placeholder="Stück" style="width: 60px;" />
-                <br />
-                <label><input type="checkbox" name="ramps" /> Rampen:</label>
-                <input type="number" name="ramps_count" min="0" placeholder="Stück" style="width: 60px;" />
-                <br />
-                <label><input type="checkbox" name="door_widening" /> Türverbreiterung:</label>
-                <input type="number" name="door_widening_count" min="0" placeholder="Stück" style="width: 60px;" />
-                <br />
-                <label><input type="checkbox" name="sliding_door" /> Schiebetür:</label>
-                <input type="number" name="sliding_door_count" min="0" placeholder="Stück" style="width: 60px;" />
-                <br />
-                <label><input type="checkbox" name="bathroom_door_slant" /> Badtür Schräge</label>
-                <br /><br />
+                        <!-- Türschwellen / Rampen -->
+                        <label><input type="checkbox" name="threshold_removal" /> Türschwellen entfernen:</label>
+                        <input type="number" name="threshold_removal_count" min="0" placeholder="Stück"
+                            style="width: 60px;" />
+                        <br />
+                        <label><input type="checkbox" name="ramps" /> Rampen:</label>
+                        <input type="number" name="ramps_count" min="0" placeholder="Stück" style="width: 60px;" />
+                        <br />
+                        <label><input type="checkbox" name="door_widening" /> Türverbreiterung:</label>
+                        <input type="number" name="door_widening_count" min="0" placeholder="Stück"
+                            style="width: 60px;" />
+                        <br />
+                        <label><input type="checkbox" name="sliding_door" /> Schiebetür:</label>
+                        <input type="number" name="sliding_door_count" min="0" placeholder="Stück"
+                            style="width: 60px;" />
+                        <br />
+                        <label><input type="checkbox" name="bathroom_door_slant" /> Badtür Schräge</label>
+                        <br /><br />
 
-                <!-- Waschbereich -->
-                <label><input type="checkbox" name="wheelchair_sink" /> unterfahrbarer Waschtisch</label><br />
-                <label><input type="checkbox" name="sink_faucet" /> Waschtischarmatur</label><br /><br />
+                        <!-- Waschbereich -->
+                        <label><input type="checkbox" name="wheelchair_sink" /> unterfahrbarer Waschtisch</label><br />
+                        <label><input type="checkbox" name="sink_faucet" /> Waschtischarmatur</label><br /><br />
 
-                <!-- Dusche & Bad -->
-                <label><input type="checkbox" name="bathtub_to_shower" /> Badewanne zur Dusche</label><br />
-                <label><input type="checkbox" name="shower_to_shower" /> Dusche zur Dusche</label><br />
-                <label><input type="checkbox" name="floor_drain" /> Fußbodenentwässerung vorhanden</label><br />
-                <label><input type="checkbox" name="side_drain" /> Seitenentwässerung vorhanden</label><br />
-                <label><input type="checkbox" name="platform_requested" /> Podest gewünscht</label><br />
-                <label><input type="checkbox" name="pumping_system" /> Pumpensystem <em>(als Extraleistung
-                        gewünscht)</em></label><br />
-                <label><input type="checkbox" name="bathtub_with_entry" /> Badewanne mit Einstieg</label><br />
-                <label><input type="checkbox" name="shower_curtain" /> Duschvorhang</label><br />
-                <label><input type="checkbox" name="glass_partition" /> Glasabtrennung <em>(als Extraleistung
-                        gewünscht)</em></label><br />
-                <label><input type="checkbox" name="non_slip_floor" /> rutschhemmender <strong>Fußboden</strong>
-                    gewünscht</label><br />
+                        <!-- Dusche & Bad -->
+                        <label><input type="checkbox" name="bathtub_to_shower" /> Badewanne zur Dusche</label><br />
+                        <label><input type="checkbox" name="shower_to_shower" /> Dusche zur Dusche</label><br />
+                        <label><input type="checkbox" name="floor_drain" /> Fußbodenentwässerung vorhanden</label><br />
+                        <label><input type="checkbox" name="side_drain" /> Seitenentwässerung vorhanden</label><br />
+                        <label><input type="checkbox" name="platform_requested" /> Podest gewünscht</label><br />
+                        <label><input type="checkbox" name="pumping_system" /> Pumpensystem <em>(als Extraleistung
+                                gewünscht)</em></label><br />
+                        <label><input type="checkbox" name="bathtub_with_entry" /> Badewanne mit Einstieg</label><br />
+                        <label><input type="checkbox" name="shower_curtain" /> Duschvorhang</label><br />
+                        <label><input type="checkbox" name="glass_partition" /> Glasabtrennung <em>(als Extraleistung
+                                gewünscht)</em></label><br />
+                        <label><input type="checkbox" name="non_slip_floor" /> rutschhemmender <strong>Fußboden</strong>
+                            gewünscht</label><br />
 
-                <!-- Bodenbelag -->
-                <label><input type="checkbox" name="floor_complete" /> komplett <em>(als
-                        Extraleistung)</em></label><br />
-                <label><input type="checkbox" name="floor_shower_only" /> nur Duschbereich</label><br />
-                <label><input type="checkbox" name="floor_pvc" /> PVC – Vinyl FB</label><br /><br />
+                        <!-- Bodenbelag -->
+                        <label><input type="checkbox" name="floor_complete" /> komplett <em>(als
+                                Extraleistung)</em></label><br />
+                        <label><input type="checkbox" name="floor_shower_only" /> nur Duschbereich</label><br />
+                        <label><input type="checkbox" name="floor_pvc" /> PVC – Vinyl FB</label><br /><br />
 
-                <!-- Wandfliesen -->
-                <strong>Wandfliesen:</strong><br />
-                <label><input type="checkbox" name="tiles_complete" /> Komplett <em>(als
-                        Extraleistung)</em></label><br />
-                <label><input type="checkbox" name="tiles_bath_area" /> nur ausgebauter
-                    Wannenbereich</label><br />
-                <label><input type="checkbox" name="tiles_faucet" /> Duscharmatur oder Brause <em>(als
-                        Extraleistung)</em></label>
-            </fieldset>
-            </div>
+                        <!-- Wandfliesen -->
+                        <strong>Wandfliesen:</strong><br />
+                        <label><input type="checkbox" name="tiles_complete" /> Komplett <em>(als
+                                Extraleistung)</em></label><br />
+                        <label><input type="checkbox" name="tiles_bath_area" /> nur ausgebauter
+                            Wannenbereich</label><br />
+                        <label><input type="checkbox" name="tiles_faucet" /> Duscharmatur oder Brause <em>(als
+                                Extraleistung)</em></label>
+                        <br />
+                        <br />
+                        <!-- Sonstiges -->
+                        <strong>Extra:</strong><br />
+                        <label><input type="checkbox" name="other_services" /> Sonstige Leistungen:</label>
+                        <input type="text" name="other_services_details" placeholder="Bitte angeben"
+                            style="width: 90%;" />
+                        <br />
+                        <br />
+                        <!-- Kosten -->
+                        <strong>Kosten:</strong><br />
+                        <input type="text" name="costs" placeholder="Bitte angeben" style="width: 90%;" />
+                        <br />
+                    </fieldset>
+                </div>
             </div>
             <button type="submit">PDF generieren</button>
             <button type="reset">Formular zurücksetzen</button>
@@ -142,10 +167,13 @@
         </form>
 
         <h2>Unterschrift</h2>
-        <canvas id="signature-pad" width="400" height="150" style="border:1px solid #ccc"></canvas>
-        <button id="clear-signature">Unterschrift löschen</button>
-
-        <button id="save-pdf" disabled>PDF speichern</button>
+        <div class="signature-container">
+            <canvas id="signature-pad" width="500" height="150" style="border:1px solid #ccc"></canvas>
+            <div class="signature-buttons">
+                <button id="clear-signature">Unterschrift löschen</button>
+                <button id="save-pdf" disabled>PDF speichern</button>
+            </div>
+        </div>
 
         <!-- pdf-lib -->
         <script src="libs/pdf-lib.min.js"></script>

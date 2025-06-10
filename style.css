@@ -8,10 +8,36 @@
     line-height: 1.6;
 } */
 
-h1,
+/* h1,
 h2 {
     color: #1f2937;
+} */
+
+.hero {
+    width: 100%;
+    /* background-color: #0A3548; */
+    background-color: #0A3649;
+    padding: 1.5rem 2rem;
+    color: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+
 }
+
+.hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: white;
+}
+
+.logo {
+    height: 50px;
+    width: auto;
+}
+
 
 /* form {
     display: flex;
@@ -82,6 +108,19 @@ form {
     background-color: #fefefe;
 }
 
+.signature-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* .gender-options {
+    display: flex;
+    gap: 0.25rem;
+    align-items: center;
+} */
+
 
 /* .form-sections {
     display: flex;
@@ -124,12 +163,14 @@ select {
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     background-color: white;
+    color: black;
 }
 
 
 button {
     padding: 0.75rem;
-    background-color: #3b82f6;
+    /* background-color: #3b82f6; */
+    background-color: #0A3649;
     color: white;
     font-weight: 600;
     border: none;
@@ -139,7 +180,8 @@ button {
 }
 
 button:hover {
-    background-color: #2563eb;
+    /* background-color: #2563eb; */
+    background-color: #3a5e6e;
 }
 
 canvas {
@@ -156,9 +198,11 @@ canvas {
 
 #clear-signature {
     margin-top: 0.5rem;
-    background-color: #ef4444;
+    /* background-color: #ef4444; */
+    background-color: #a80f0f;
 }
 
 #clear-signature:hover {
-    background-color: #dc2626;
+    /* background-color: #dc2626; */
+    background-color: #c81c1c;
 }

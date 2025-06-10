@@ -7,13 +7,48 @@ const canvas = document.getElementById("signature-pad");
 const clearBtn = document.getElementById("clear-signature");
 const signaturePad = new SignaturePad(canvas);
 
+const costsInput = form.querySelector("input[name='costs']");
+
+const priceList = {
+    grab_bars: 50,
+    railings: 75,
+    raised_toilet: 300,
+    angle_valve: 100,
+    shower_toilet: 1200,
+    threshold_removal: 80,
+    ramps: 200,
+    door_widening: 400,
+    sliding_door: 500,
+    bathroom_door_slant: 150,
+    wheelchair_sink: 250,
+    sink_faucet: 100,
+    bathtub_to_shower: 4179.28,
+    shower_to_shower: 4179.28,
+    floor_drain: 0,
+    side_drain: 0,
+    platform_requested: 300,
+    pumping_system: 600,
+    bathtub_with_entry: 4179.28,
+    shower_curtain: 50,
+    glass_partition: 800,
+    non_slip_floor: 250,
+    floor_complete: 1000,
+    floor_shower_only: 400,
+    floor_pvc: 300,
+    tiles_complete: 1500,
+    tiles_bath_area: 800,
+    tiles_faucet: 200
+};
+
+
+
 const DEBUG_MODE = true;
 const dummyData = {
     first_name: "Max",
     last_name: "Mustermann",
     birthdate: "1990-01-01",
-    insurance_number: "123456789",
-    insurance_provider: "Muster Versicherung",
+    insurance_number: "0123456789",
+    insurance_provider: "TK",
     street: "Musterstraße 1",
     zip_code: "12345",
     city: "Musterstadt",
@@ -59,7 +94,8 @@ const dummyProductData = {
     floor_pvc: false,
     tiles_complete: false,
     tiles_bath_area: true,
-    tiles_faucet: false
+    tiles_faucet: false,
+    costs: "4179.28"
 };
 
 
@@ -88,6 +124,32 @@ function getRectsFromField(field, doc) {
     });
 }
 
+
+function calculateCosts() {
+    const productData = getProductData();
+    let totalCost = 0;
+
+    let total = 0;
+
+    // Calculate costs based on productData
+    for (const [key, value] of Object.entries(productData)) {
+        if (value === true || value === "true") {
+            const count = parseInt(productData[`${key}_count`] || '1', 10);
+            const price = priceList[key] || 0;
+            total += price * count;
+        }
+    }
+    // Add the total to the costs input field
+    totalCost += total;
+    // Add the costs from the form input field
+
+    console.log("Total Cost:", totalCost);
+    // Update the UI with the total cost if needed
+    costsInput.value = totalCost.toFixed(2); // Assuming costsInput is a number input field
+    costsInput.dispatchEvent(new Event('input')); // Trigger input event to update any listeners
+
+}
+
 async function mergePDFs(pdfBytesArray) {
     const mergedPdf = await PDFLib.PDFDocument.create();
     for (const pdfBytes of pdfBytesArray) {
@@ -105,6 +167,13 @@ async function loadAndFillForm(path, fields) {
 
     const pdfFields = form.getFields();
 
+    console.log("PDF Fields:", pdfFields.map(f => f.getName()));
+    for (const field of form.getFields()) {
+        console.log(field.getName(), field.acroField.getWidgets().length);
+    }
+
+
+
     for (const pdfField of pdfFields) {
         const name = pdfField.getName();
         const type = pdfField.constructor.name; // Detect type: PDFTextField, PDFCheckBox, etc.
@@ -112,7 +181,7 @@ async function loadAndFillForm(path, fields) {
         if (!(name in fields)) continue; // Skip if not in provided data
 
         const value = fields[name];
-        // console.log(`Setting field "${name}" (type: ${type}) to value: ${value}`);
+        console.log(`Setting field "${name}" (type: ${type}) to value: ${value}`);
 
         if (type === 'r') {
             form.getTextField(name).setText(value);
@@ -121,7 +190,7 @@ async function loadAndFillForm(path, fields) {
                 form.getTextField(name).setAlignment(PDFLib.TextAlignment.Right);
                 // form.getTextField(name).setFontSize(10); // Adjust font size if needed
             }
-            
+
         } else if (type === 'e') {
             // Use value truthiness or check for a specific string like "on", "yes", etc.
             if (value === true || value === "true" || value === "on" || value === "yes") {
@@ -137,6 +206,30 @@ async function loadAndFillForm(path, fields) {
     return pdfDoc;
 }
 
+// async function hideFormField(pdfBytes, fieldName) {
+//   const pdfDoc = await PDFDocument.load(pdfBytes);
+
+//   const form = pdfDoc.getForm();
+//   const field = form.getFieldMaybe(fieldName);
+
+//   if (!field) {
+//     console.log(`Field ${fieldName} not found`);
+//     return;
+//   }
+
+//   // Access the widget annotation(s) of the field
+//   const widgets = field.acroField.getWidgets();
+
+//   for (const widget of widgets) {
+//     const currentFlags = widget.getFlags() || 0;
+//     // Set the Hidden flag (bit 2)
+//     widget.setFlags(currentFlags | 2);
+//   }
+
+//   const modifiedPdfBytes = await pdfDoc.save();
+//   return modifiedPdfBytes;
+// }
+
 async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
     if (signaturePad.isEmpty()) return;
     const form = pdfDoc.getForm();
@@ -148,14 +241,31 @@ async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
     const signatureDataURL = signaturePad.toDataURL();
     const signatureImage = await pdfDoc.embedPng(signatureDataURL);
     const signatureImageDims = signatureImage.scale(0.25);
+    signatureField.setImage(signatureImage)
+
+    // hideFormField(await pdfDoc.save(), fieldName).then(modifiedPdfBytes => {
+    //     const modifiedPdfDoc = PDFLib.PDFDocument.load(modifiedPdfBytes);
+    //     const modifiedForm = modifiedPdfDoc.getForm();
+    //     const modifiedSignatureField = modifiedForm.getTextField(fieldName);
+    //     modifiedSignatureField.setText("");
+    //     modifiedSignatureField.enableReadOnly();
+    // }
+    // );
     // const page = pdfDoc.getPage(rect.pageNumber + 1); // For some reason I get -1 probably due to the fields not being assigned to a page
     const page = pdfDoc.getPage(signaturePage); // For some reason I get -1 probably due to the fields not being assigned to a page
-    page.drawImage(signatureImage, {
-        x: rect.x,
-        y: rect.y,
-        width: signatureImageDims.width,
-        height: signatureImageDims.height
-    });
+    // console.log("", pdfDoc.getPageCount(), rect.pageNumber, signaturePage, page.getSize());
+    // console.log("Signature Rect:", rect, "Page Number:", rect.pageNumber, "Signature Page:", signaturePage);
+    // console.log("Signature Image Dimensions:", signatureImageDims);
+    // console.log("Signature Image:", signatureImage);
+    // console.log("Signature Field:", signatureField);
+    // console.log("x:", rect.x, "y:", rect.y, "width:", signatureImageDims.width, "height:", signatureImageDims.height);
+
+    // page.drawImage(signatureImage, {
+    //     x: rect.x,
+    //     y: rect.y, // - rect.height + signatureImageDims.height, // Adjust y to align with the field
+    //     width: signatureImageDims.width,
+    //     height: signatureImageDims.height
+    // });
 }
 
 function getProductData() {
@@ -217,7 +327,14 @@ function getProductData() {
         // Wandfliesen
         tiles_complete: document.querySelector('input[name="tiles_complete"]').checked,
         tiles_bath_area: document.querySelector('input[name="tiles_bath_area"]').checked,
-        tiles_faucet: document.querySelector('input[name="tiles_faucet"]').checked
+        tiles_faucet: document.querySelector('input[name="tiles_faucet"]').checked,
+
+        // Extras 
+        other_services: document.querySelector('input[name="other_services"]').checked,
+        other_services_text: document.querySelector('input[name="other_services_text"]').value || "",
+        
+        // Costs
+        costs: document.querySelector('input[name="costs"]').value || "0"
     };
 
     return productData;
@@ -250,7 +367,11 @@ async function generatePdf() {
 
     let productData = DEBUG_MODE ? dummyProductData : getProductData();
 
-    
+    if (formData.insurance_provider === 'Andere') {
+        formData.insurance_provider = document.getElementById("insurance_provider_other").value;
+    }
+
+
     // if (DEBUG_MODE) {
     //     console.log("Form Data:", formData);
     //     formData = dummyData; // Use dummy data in debug mode
@@ -265,6 +386,7 @@ async function generatePdf() {
 
     // const pdfDefinitions = getPdfDefinitions(formData, full_name, address, formattedDate, zip_city);
     const pdfDefinitions = getPdfDefinitions(formData, formattedDate, productData);
+    // const pdfTest = [pdfDefinitions[0], pdfDefinitions[6]];
 
     // if other insurance is selected, add the text to the insurance_provider field
     if (formData.insurance_provider === 'Andere') {
@@ -273,6 +395,7 @@ async function generatePdf() {
 
     latestPDFBytesArray = [];
 
+    console.log("Generating PDFs with definitions:", pdfDefinitions);
     for (const def of pdfDefinitions) {
         const pdfDoc = await loadAndFillForm(def.path, def.fields(formData, formattedDate, productData));
         if (def.applySignature) {
@@ -280,6 +403,8 @@ async function generatePdf() {
         }
         latestPDFBytesArray.push(await pdfDoc.save());
     }
+
+    console.log("Generated PDF bytes:", latestPDFBytesArray);
 
     saveBtn.disabled = false;
 }
@@ -316,6 +441,11 @@ form.addEventListener("submit", async (e) => {
         console.error("Error generating PDF:", error);
     }
 });
+
+form.querySelectorAll("input[type='checkbox'], input[type='number']").forEach(input => {
+    input.addEventListener("change", calculateCosts);
+});
+
 
 clearBtn.addEventListener("click", () => {
     signaturePad.clear();

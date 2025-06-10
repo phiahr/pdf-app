@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pdf-app-v2';
+const CACHE_NAME = 'pdf-app-v1';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',
@@ -8,14 +8,22 @@ const ASSETS_TO_CACHE = [
     '/libs/pdf-lib.min.js',
     '/libs/signature_pad.min.js',
     '/libs/FileSaver.min.js',
-    '/assets/stammblatt.pdf',
-    '/assets/Auftragsbestaetigung.pdf',
-    '/assets/Annahme.pdf',
-    '/assets/Datenschutz.pdf',
-    '/assets/AGB.pdf',
-    '/assets/Vollmacht.pdf',
     '/icons/icon-192.png',
     '/icons/icon-512.png',
+    '/assets/AGB.pdf',
+    '/assets/Annahme.pdf',
+    '/assets/Auftragsbestaetigung.pdf',
+    '/assets/Datenschutz.pdf',
+    '/assets/Stammblatt.pdf',
+    '/assets/Vollmacht.pdf',
+    '/assets/insurance_providers/aok.pdf',
+    '/assets/insurance_providers/barmer.pdf',
+    '/assets/insurance_providers/bkk.pdf',
+    '/assets/insurance_providers/dak.pdf',
+    '/assets/insurance_providers/ikk.pdf',
+    // '/assets/insurance_providers/kkh.pdf',
+    // '/assets/insurance_providers/tk.pdf',
+    // '/assets/insurance_providers/other.pdf',
 ];
 
 // Install: Dateien vorab cachen
