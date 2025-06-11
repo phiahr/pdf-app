@@ -1,6 +1,8 @@
 const CACHE_NAME = 'pdf-app-v1';
 const ASSETS_TO_CACHE = [
     '/',
+
+    // HTML, CSS, JS, and manifest files
     '/index.html',
     '/style.css',
     '/main.js',
@@ -8,14 +10,20 @@ const ASSETS_TO_CACHE = [
     '/libs/pdf-lib.min.js',
     '/libs/signature_pad.min.js',
     '/libs/FileSaver.min.js',
+
+    // icons
     '/icons/icon-192.png',
     '/icons/icon-512.png',
+
+    // general PDF files
     '/assets/AGB.pdf',
     '/assets/Annahme.pdf',
     '/assets/Auftragsbestaetigung.pdf',
     '/assets/Datenschutz.pdf',
     '/assets/Stammblatt.pdf',
     '/assets/Vollmacht.pdf',
+
+    // insurance provider PDF files
     '/assets/insurance_providers/aok.pdf',
     '/assets/insurance_providers/barmer.pdf',
     '/assets/insurance_providers/bkk.pdf',

@@ -1,15 +1,11 @@
 // main.js: Refactored PDF generation with signature and merging
 import { getPdfDefinitions } from "./pdfConfig.js";
 
-const form = document.getElementById("data-form");
-const saveBtn = document.getElementById("save-pdf");
-const canvas = document.getElementById("signature-pad");
-const clearBtn = document.getElementById("clear-signature");
-const signaturePad = new SignaturePad(canvas);
+// CONSTANTS
 
-const costsInput = form.querySelector("input[name='costs']");
+const DEBUG_MODE = true;
 
-const priceList = {
+const PRICE_LIST = {
     grab_bars: 50,
     railings: 75,
     raised_toilet: 300,
@@ -40,10 +36,7 @@ const priceList = {
     tiles_faucet: 200
 };
 
-
-
-const DEBUG_MODE = true;
-const dummyData = {
+const DUMMY_DATA = {
     first_name: "Max",
     last_name: "Mustermann",
     birthdate: "1990-01-01",
@@ -58,7 +51,7 @@ const dummyData = {
     female: false,
 };
 
-const dummyProductData = {
+const DUMMY_PRODUCT_DATA = {
     grab_bars: "true",
     grab_bars_count: "2",
     railings: true,
@@ -99,6 +92,18 @@ const dummyProductData = {
 };
 
 
+const form = document.getElementById("data-form");
+const saveBtn = document.getElementById("save-pdf");
+const canvas = document.getElementById("signature-pad");
+const clearBtn = document.getElementById("clear-signature");
+const costsInput = form.querySelector("input[name='costs']");
+const insuranceSelect = document.getElementById('insurance_provider');
+const otherInsuranceInput = document.getElementById('insurance_provider_other');
+const signaturePad = new SignaturePad(canvas);
+
+let latestPDFBytesArray = [];
+
+// Check if caches are available and log them
 if ('caches' in window) {
     caches.keys().then(keys => {
         console.log('Available caches:', keys);
@@ -110,11 +115,7 @@ if ('caches' in window) {
         requests.forEach(req => console.log(req.url));
     });
 }
-const insuranceSelect = document.getElementById('insurance_provider');
-const otherInsuranceInput = document.getElementById('insurance_provider_other');
 
-
-let latestPDFBytesArray = [];
 
 function getRectsFromField(field, doc) {
     return field.acroField.getWidgets().map(widget => {
@@ -135,7 +136,7 @@ function calculateCosts() {
     for (const [key, value] of Object.entries(productData)) {
         if (value === true || value === "true") {
             const count = parseInt(productData[`${key}_count`] || '1', 10);
-            const price = priceList[key] || 0;
+            const price = PRICE_LIST[key] || 0;
             total += price * count;
         }
     }
@@ -367,9 +368,9 @@ function getFormData() {
 
 async function generatePdf() {
     // const formData = {
-    let formData = DEBUG_MODE ? dummyData : getFormData();
+    let formData = DEBUG_MODE ? DUMMY_DATA : getFormData();
 
-    let productData = DEBUG_MODE ? dummyProductData : getProductData();
+    let productData = DEBUG_MODE ? DUMMY_PRODUCT_DATA : getProductData();
 
     if (formData.insurance_provider === 'Andere') {
         formData.insurance_provider = document.getElementById("insurance_provider_other").value;
