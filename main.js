@@ -167,12 +167,6 @@ async function loadAndFillForm(path, fields) {
 
     const pdfFields = form.getFields();
 
-    console.log("PDF Fields:", pdfFields.map(f => f.getName()));
-    for (const field of form.getFields()) {
-        console.log(field.getName(), field.acroField.getWidgets().length);
-    }
-
-
 
     for (const pdfField of pdfFields) {
         const name = pdfField.getName();
@@ -233,7 +227,17 @@ async function loadAndFillForm(path, fields) {
 async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
     if (signaturePad.isEmpty()) return;
     const form = pdfDoc.getForm();
+    const pdfFields = form.getFields();
+    if (!pdfFields.some(field => field.getName() === fieldName)) {
+        console.log(`Signature field "${fieldName}" not found in the PDF.`);
+        return;
+    }
     const signatureField = form.getTextField(fieldName);
+    console.log("Signature Field:", signatureField);
+    if (!signatureField) {
+        // console.error(`Signature field "${fieldName}" not found in the PDF.`);
+        return;
+    }
     signatureField.setText("");
     signatureField.enableReadOnly();
 
@@ -252,7 +256,7 @@ async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
     // }
     // );
     // const page = pdfDoc.getPage(rect.pageNumber + 1); // For some reason I get -1 probably due to the fields not being assigned to a page
-    const page = pdfDoc.getPage(signaturePage); // For some reason I get -1 probably due to the fields not being assigned to a page
+    // const page = pdfDoc.getPage(signaturePage); // For some reason I get -1 probably due to the fields not being assigned to a page
     // console.log("", pdfDoc.getPageCount(), rect.pageNumber, signaturePage, page.getSize());
     // console.log("Signature Rect:", rect, "Page Number:", rect.pageNumber, "Signature Page:", signaturePage);
     // console.log("Signature Image Dimensions:", signatureImageDims);
@@ -372,20 +376,10 @@ async function generatePdf() {
     }
 
 
-    // if (DEBUG_MODE) {
-    //     console.log("Form Data:", formData);
-    //     formData = dummyData; // Use dummy data in debug mode
-    // }
-
-    // const full_name = `${formData.first_name} ${formData.last_name}`;
-    // const address = `${formData.street}, ${formData.zip_code} ${formData.city}`;
-    const formattedDate = new Date().toLocaleDateString('de-DE', {
-        year: 'numeric', month: '2-digit', day: '2-digit'
-    });
     // const zip_city = `${formData.zip_code} ${formData.city}`;
 
     // const pdfDefinitions = getPdfDefinitions(formData, full_name, address, formattedDate, zip_city);
-    const pdfDefinitions = getPdfDefinitions(formData, formattedDate, productData);
+    const pdfDefinitions = getPdfDefinitions(formData, productData);
     // const pdfTest = [pdfDefinitions[0], pdfDefinitions[6]];
 
     // if other insurance is selected, add the text to the insurance_provider field
@@ -395,16 +389,12 @@ async function generatePdf() {
 
     latestPDFBytesArray = [];
 
-    console.log("Generating PDFs with definitions:", pdfDefinitions);
     for (const def of pdfDefinitions) {
-        const pdfDoc = await loadAndFillForm(def.path, def.fields(formData, formattedDate, productData));
-        if (def.applySignature) {
-            await applySignatureToPdf(pdfDoc, "signature", def.signaturePage);
-        }
+        const pdfDoc = await loadAndFillForm(def.path, def.fields(formData, productData));
+        await applySignatureToPdf(pdfDoc, "signature", def.signaturePage);
         latestPDFBytesArray.push(await pdfDoc.save());
     }
 
-    console.log("Generated PDF bytes:", latestPDFBytesArray);
 
     saveBtn.disabled = false;
 }

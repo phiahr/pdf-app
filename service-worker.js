@@ -21,9 +21,10 @@ const ASSETS_TO_CACHE = [
     '/assets/insurance_providers/bkk.pdf',
     '/assets/insurance_providers/dak.pdf',
     '/assets/insurance_providers/ikk.pdf',
-    // '/assets/insurance_providers/kkh.pdf',
-    // '/assets/insurance_providers/tk.pdf',
-    // '/assets/insurance_providers/other.pdf',
+    '/assets/insurance_providers/kkh.pdf',
+    '/assets/insurance_providers/knappschaft.pdf',
+    '/assets/insurance_providers/other.pdf',
+    '/assets/insurance_providers/tk.pdf',
 ];
 
 // Install: Dateien vorab cachen
