@@ -25,8 +25,7 @@
         <form id="data-form">
             <div class="form-sections">
                 <div class="personal-info">
-                    <!-- <input type="text" id="first_name" placeholder="Vorname" required /> -->
-                    <!-- Radio box if man or woman -->
+                    <!-- Gender -->
                     <div>
                         <label>Geschlecht:</label><br>
                         <div class="gender-options">
@@ -37,11 +36,13 @@
                         </div>
                     </div>
 
+                    <!-- Basic Inputs -->
                     <input type="text" id="first_name" placeholder="Vorname" />
                     <input type="text" id="last_name" placeholder="Nachname" />
                     <input type="text" id="birthdate" placeholder="Geburtsdatum" />
                     <input type="text" id="insurance_number" placeholder="Versicherungsnummer" />
-                    <!-- <input type="text" id="insurance_provider" placeholder="Versicherung" /> -->
+
+                    <!-- Insurance Dropdown -->
                     <select id="insurance_provider">
                         <option value="">Versicherung auswählen</option>
                         <option value="AOK">AOK</option>
@@ -65,7 +66,78 @@
                     <input type="text" id="street" placeholder="Straße" />
                     <input type="text" id="zip" placeholder="PLZ" />
                     <input type="text" id="city" placeholder="Ort" />
+                    <input type="text" id="reference" placeholder="Empfohlen von" />
+                    <select id="care_level">
+                        <option value="">Pflegegrad auswählen</option>
+                        <option value="level_1">Pflegegrad 1</option>
+                        <option value="level_2">Pflegegrad 2</option>
+                        <option value="level_3">Pflegegrad 3</option>
+                        <option value="level_4">Pflegegrad 4</option>
+                        <option value="level_5">Pflegegrad 5</option>
+                    </select>
+
+
+                    <!-- Elevator Field -->
+                    <label>Etage</label>
+                    <select id="floor">
+                        <option value="">Etage auswählen</option>
+                        <script>
+                            const floorSelect = document.getElementById("floor");
+                            for (let i = 0; i <= 30; i++) {
+                                const option = document.createElement("option");
+                                option.value = i;
+                                option.textContent = i === 0 ? "Erdgeschoss" : `${i}. Etage`;
+                                floorSelect.appendChild(option);
+                            }
+                        </script>
+                        <!-- Add more options as needed -->
+                    </select>
+
+                    <label><input type="checkbox" id="elevator" name="elevator" /> Fahrstuhl vorhanden?</label>
+
+                    <!-- Diagnosis -->
+                    <label>Diagnose:</label>
+                    <div class="diagnosis-options">
+                        <label><input type="checkbox" id="bed" /> Nur im Bett</label>
+    <label><input type="checkbox" id="walk" /> Gangunsicherheit</label>
+    <label><input type="checkbox" id="walker" /> Rollator</label>
+    <label><input type="checkbox" id="wheelchair" /> Rollstuhl </label>
+                        <div>
+                            <label><input type="checkbox" id="always" /> Immer?</label>
+                        </div>
+                    </div>
+                    <input type="text" id="other_diagnosis" placeholder="Weitere Diagnosen" />
+
+
+                    <!-- Care Taker Toggle -->
+                    <div>
+                        <input type="checkbox" id="toggle_care_taker" />
+                        <label for="toggle_care_taker">Betreuer hinzufügen</label>
+                    </div>
+                    <div class="care_taker-info" style="display: none;">
+                        <input type="text" id="care_taker_first_name" placeholder="Vorname des Betreuers" />
+                        <input type="text" id="care_taker_last_name" placeholder="Nachname des Betreuers" />
+                        <input type="text" id="care_taker_street" placeholder="Straße des Betreuers" />
+                        <input type="text" id="care_taker_zip_city" placeholder="PLZ und Ort des Betreuers" />
+                        <input type="text" id="care_taker_phone" placeholder="Telefonnummer des Betreuers" />
+                        <input type="email" id="care_taker_email" placeholder="E-Mail des Betreuers" />
+                        <input type="text" id="care_taker_fax" placeholder="Fax des Betreuers" />
+                    </div>
+
+                    <!-- Landlord Toggle -->
+                    <div>
+                        <input type="checkbox" id="toggle_landlord" />
+                        <label for="toggle_landlord">Vermieter hinzufügen</label>
+                    </div>
+                    <div class="landlord-info" style="display: none;">
+                        <input type="text" id="landlord_full_name" placeholder="Vollständiger Name des Vermieters" />
+                        <input type="text" id="landlord_street" placeholder="Straße des Vermieters" />
+                        <input type="text" id="landlord_zip_city" placeholder="PLZ und Ort des Vermieters" />
+                        <input type="text" id="landlord_phone" placeholder="Telefonnummer des Vermieters" />
+                        <input type="text" id="landlord_fax" placeholder="Fax des Vermieters" />
+                    </div>
                 </div>
+
                 <div class="products">
                     <fieldset>
                         <legend><strong>Gewünschte Leistung:</strong></legend>
@@ -136,7 +208,7 @@
                         <label><input type="checkbox" name="floor_complete" /> komplett <em>(als
                                 Extraleistung)</em></label><br />
                         <label><input type="checkbox" name="floor_shower_only" /> nur Duschbereich</label><br />
-                        <label><input type="checkbox" name="floor_pvc" /> PVC – Vinyl FB</label><br /><br />
+                        <label><input type="checkbox" name="floor_pvc" /> PVC - Vinyl FB</label><br /><br />
 
                         <!-- Wandfliesen -->
                         <strong>Wandfliesen:</strong><br />
@@ -150,8 +222,8 @@
                         <br />
                         <!-- Sonstiges -->
                         <strong>Extra:</strong><br />
-                        <label><input type="checkbox" name="other_services" /> Sonstige Leistungen:</label>
-                        <input type="text" name="other_services_details" placeholder="Bitte angeben"
+                        <label><input type="checkbox" name="other_products" /> Sonstige Leistungen:</label>
+                        <input type="text" name="other_products_details" placeholder="Bitte angeben"
                             style="width: 90%;" />
                         <br />
                         <br />

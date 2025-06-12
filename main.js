@@ -5,7 +5,7 @@ import { getProductDefinitions } from "./productConfig.js";
 
 // CONSTANTS
 
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 
 const PRICE_LIST = {
     grab_bars: 50,
@@ -39,19 +39,67 @@ const PRICE_LIST = {
 };
 
 const DUMMY_DATA = {
+    // Basic Info
     first_name: "Max",
     last_name: "Mustermann",
     birthdate: "1990-01-01",
     insurance_number: "0123456789",
-    insurance_provider: "aok",
+    insurance_provider: "AOK",
+    insurance_provider_other: "",
     street: "Musterstraße 1",
     zip_code: "12345",
     city: "Musterstadt",
     email: "max.mustermann@gmail.com",
     phone_number: "0123456789",
+    reference: "Dr. Beispiel",
+
+    // Gender
     male: true,
     female: false,
+
+    // Care Level & Floor
+    care_level: "2",
+    floor: "2",
+    elevator: true,
+
+    // Diagnosis
+    // diagnosis: {
+        bed: false,
+        walk: true,
+        walker: false,
+        wheelchair: true,
+        always: true,
+        other_diagnosis: "Diabetes Typ 2",
+    // },
+
+    // Care Taker
+    care_taker_enabled: true,
+    // care_taker: {
+        care_taker_first_name: "Anna",
+        care_taker_last_name: "Musterfrau",
+        care_taker_street: "Betreuerweg 5",
+        care_taker_zip_city: "54321 Betreuerstadt",
+        care_taker_phone_number: "0987654321",
+        care_taker_mail: "anna.musterfrau@example.com",
+        care_taker_fax: "0987654322",
+    // },
+
+    // Landlord
+    landlord_enabled: true,
+    // landlord: {
+        landlord_full_name: "Herr Vermieter",
+        landlord_street: "Vermieterstraße 10",
+        landlord_zip_city: "11111 Mietstadt",
+        landlord_phone_number: "030123456",
+        landlord_fax: "030123457"
+    // }
 };
+
+['bed', 'walk', 'walker', 'wheelchair', 'always'].forEach((key) => {
+    console.log(`Adding boolean fields for ${key} set to ${DUMMY_DATA[key]}`);
+    DUMMY_DATA[`${key}_yes`] = DUMMY_DATA[key] === true;
+    DUMMY_DATA[`${key}_no`] = DUMMY_DATA[key] === false;
+});
 
 const DUMMY_PRODUCT_DATA = {
     grab_bars: "true",
@@ -101,6 +149,10 @@ const clearBtn = document.getElementById("clear-signature");
 const costsInput = form.querySelector("input[name='costs']");
 const insuranceSelect = document.getElementById('insurance_provider');
 const otherInsuranceInput = document.getElementById('insurance_provider_other');
+const careTakerSelect = document.getElementById('toggle_care_taker');
+const landlordSelect = document.getElementById('toggle_landlord');
+
+
 const signaturePad = new SignaturePad(canvas);
 
 let latestPDFBytesArray = [];
@@ -131,13 +183,6 @@ if ('caches' in window) {
 }
 
 
-function getRectsFromField(field, doc) {
-    return field.acroField.getWidgets().map(widget => {
-        const rect = widget.getRectangle();
-        rect.pageNumber = doc.getPages().findIndex(x => x.ref === widget.P());
-        return rect;
-    });
-}
 
 function calculateCosts() {
     const productData = getProductData();
@@ -264,7 +309,7 @@ async function loadAndFillForm(path, fields) {
         if (!(name in fields)) continue; // Skip if not in provided data
 
         const value = fields[name];
-        // console.log(`Setting field "${name}" (type: ${type}) to value: ${value}`);
+        console.log(`Setting field "${name}" (type: ${type}) to value: ${value}`);
 
         if (type === 'r') {
             form.getTextField(name).setText(value);
@@ -276,9 +321,8 @@ async function loadAndFillForm(path, fields) {
 
         } else if (type === 'e') {
             // Use value truthiness or check for a specific string like "on", "yes", etc.
-            if (value === true || value === "true" || value === "on" || value === "yes") {
+            if (value === true) {
                 form.getCheckBox(name).check();
-                form.getCheckBox(name).updateAppearances();
             } else {
                 form.getCheckBox(name).uncheck();
             }
@@ -374,8 +418,8 @@ function getProductData() {
         tiles_faucet: document.querySelector('input[name="tiles_faucet"]').checked,
 
         // Extras 
-        other_services: document.querySelector('input[name="other_services"]').checked,
-        other_services_text: document.querySelector('input[name="other_services_details"]').value || "",
+        // other_services: document.querySelector('input[name="other_products"]').checked,
+        other_products: document.querySelector('input[name="other_products_details"]').value || "",
         
         // Costs
         costs: document.querySelector('input[name="costs"]').value || "0"
@@ -386,20 +430,67 @@ function getProductData() {
 
 function getFormData() {
     const formData = {
+        // Basic Info
         first_name: document.getElementById("first_name").value,
         last_name: document.getElementById("last_name").value,
-        // gender: document.querySelector('input[name="gender"]:checked')?.value || "",
         birthdate: document.getElementById("birthdate").value,
         insurance_number: document.getElementById("insurance_number").value,
         insurance_provider: document.getElementById("insurance_provider").value,
+        insurance_provider_other: document.getElementById("insurance_provider_other").value,
         street: document.getElementById("street").value,
         zip_code: document.getElementById("zip").value,
         city: document.getElementById("city").value,
         email: document.getElementById("email").value,
         phone_number: document.getElementById("phone").value,
+        reference: document.getElementById("reference").value,
+
+        // Gender
         male: document.getElementById("gender_male").checked,
         female: document.getElementById("gender_female").checked,
+
+        // Care Level & Floor
+        care_level: document.getElementById("care_level").value.split("_")[1] || "",
+        floor: document.getElementById("floor").value,
+        
+        elevator: document.getElementById("elevator").checked,
+        // Diagnosis
+        // diagnosis: {
+            bed: document.getElementById('bed').checked,
+            walk: document.getElementById('walk').checked,
+            walker: document.getElementById('walker').checked,
+            wheelchair: document.getElementById('wheelchair').checked,
+            always: document.getElementById('always').checked,
+            other_diagnosis: document.getElementById("other_diagnosis").value,
+        // },
+
+        // Care Taker
+        // care_taker_enabled: document.getElementById("toggle_care_taker").checked,
+        // care_taker: document.getElementById("toggle_care_taker").checked ? {
+            care_taker_first_name: document.getElementById('care_taker_first_name').value,
+            care_taker_last_name: document.getElementById('care_taker_last_name').value,
+            care_taker_street: document.getElementById('care_taker_street').value,
+            care_taker_zip_city: document.getElementById('care_taker_zip_city').value,
+            care_taker_phone: document.getElementById('care_taker_phone').value,
+            care_taker_email: document.getElementById('care_taker_email').value,
+            care_taker_fax: document.getElementById('care_taker_fax').value,
+        // } : null,
+
+        // Landlord
+        // landlord_enabled: document.getElementById("toggle_landlord").checked,
+        // landlord: document.getElementById("toggle_landlord").checked ? {
+            landlord_full_name: document.getElementById('landlord_full_name').value,
+            landlord_street: document.getElementById('landlord_street').value,
+            landlord_zip_city: document.getElementById('landlord_zip_city').value,
+            landlord_phone: document.getElementById('landlord_phone').value,
+            landlord_fax: document.getElementById('landlord_fax').value
+        // } : null
     };
+
+    // Convert boolean fields to yes/no fields
+    ['bed', 'walk', 'walker', 'wheelchair', 'always'].forEach((key) => {
+    formData[`${key}_yes`] = formData[key] === true;
+    formData[`${key}_no`] = formData[key] === false;
+});
 
     return formData;
 }
@@ -443,6 +534,16 @@ insuranceSelect.addEventListener('change', function () {
         otherInsuranceInput.value = '';
     }
 });
+
+careTakerSelect.addEventListener('change', function () {
+    document.querySelector(".care_taker-info").style.display = this.checked ? "block" : "none";
+});
+
+landlordSelect.addEventListener('change', function () {
+    document.querySelector(".landlord-info").style.display = this.checked ? "block" : "none";
+}
+);
+
 
 
 form.addEventListener("reset", () => {
