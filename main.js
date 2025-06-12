@@ -5,8 +5,12 @@ import { getProductDefinitions } from "./productConfig.js";
 
 // CONSTANTS
 
+
 const DEBUG_MODE = false;
 
+const COSTS = "bis 4180.00"; // Default costs for the product
+
+// deprecated
 const PRICE_LIST = {
     grab_bars: 50,
     railings: 75,
@@ -138,7 +142,7 @@ const DUMMY_PRODUCT_DATA = {
     tiles_complete: false,
     tiles_bath_area: true,
     tiles_faucet: false,
-    costs: "4179.28"
+    costs: "bis 4180.00"
 };
 
 
@@ -146,11 +150,13 @@ const form = document.getElementById("data-form");
 const saveBtn = document.getElementById("save-pdf");
 const canvas = document.getElementById("signature-pad");
 const clearBtn = document.getElementById("clear-signature");
-const costsInput = form.querySelector("input[name='costs']");
 const insuranceSelect = document.getElementById('insurance_provider');
 const otherInsuranceInput = document.getElementById('insurance_provider_other');
 const careTakerSelect = document.getElementById('toggle_care_taker');
 const landlordSelect = document.getElementById('toggle_landlord');
+
+// deprecated
+// const costsInput = form.querySelector("input[name='costs']");
 
 
 const signaturePad = new SignaturePad(canvas);
@@ -184,6 +190,7 @@ if ('caches' in window) {
 
 
 
+// deprecated
 function calculateCosts() {
     const productData = getProductData();
     let totalCost = 0;
@@ -422,7 +429,8 @@ function getProductData() {
         other_products: document.querySelector('input[name="other_products_details"]').value || "",
         
         // Costs
-        costs: document.querySelector('input[name="costs"]').value || "0"
+        // costs: document.querySelector('input[name="costs"]').value || "0"
+        costs: COSTS // Use the constant COSTS for default value
     };
 
     return productData;
