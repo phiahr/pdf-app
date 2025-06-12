@@ -1,5 +1,7 @@
 // main.js: Refactored PDF generation with signature and merging
 import { getPdfDefinitions } from "./pdfConfig.js";
+import { getProductDefinitions } from "./productConfig.js";
+
 
 // CONSTANTS
 
@@ -41,7 +43,7 @@ const DUMMY_DATA = {
     last_name: "Mustermann",
     birthdate: "1990-01-01",
     insurance_number: "0123456789",
-    insurance_provider: "TK",
+    insurance_provider: "aok",
     street: "Musterstraße 1",
     zip_code: "12345",
     city: "Musterstadt",
@@ -56,7 +58,7 @@ const DUMMY_PRODUCT_DATA = {
     grab_bars_count: "2",
     railings: true,
     railings_count: "1",
-    raised_toilet: true,
+    raised_toilet: false,
     raised_toilet_type: "Standard",
     angle_valve: true,
     angle_valve_type: "Standard",
@@ -103,6 +105,18 @@ const signaturePad = new SignaturePad(canvas);
 
 let latestPDFBytesArray = [];
 
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js")
+            .then(registration => {
+                console.log("Service Worker registered:", registration);
+            })
+            .catch(error => {
+                console.error("Service Worker registration failed:", error);
+            });
+    });
+}
+
 // Check if caches are available and log them
 if ('caches' in window) {
     caches.keys().then(keys => {
@@ -124,7 +138,6 @@ function getRectsFromField(field, doc) {
         return rect;
     });
 }
-
 
 function calculateCosts() {
     const productData = getProductData();
@@ -161,6 +174,55 @@ async function mergePDFs(pdfBytesArray) {
     return await mergedPdf.save();
 }
 
+function splitTextIntoChunks(text, count) {
+    const words = text.split(/\s+/);
+    const chunks = Array.from({ length: count }, () => "");
+
+    let currentChunk = 0;
+    for (const word of words) {
+        if ((chunks[currentChunk] + " " + word).trim().length > 110 && currentChunk < count - 1) {
+            currentChunk++;
+        }
+        chunks[currentChunk] += (chunks[currentChunk] ? " " : "") + word;
+    }
+
+    return chunks;
+}
+
+function fillMultiFieldGroup(baseFieldName, fullText, form, pdfFields) {
+    console.log(`Fille Multi Group "${baseFieldName}" (text: ${fullText})`);
+        const singleField = pdfFields.find(f => f.getName() === baseFieldName);
+    
+    if (singleField) {
+        console.log(`Using single multiline field: ${baseFieldName}`);
+        form.getTextField(baseFieldName).setText(fullText);
+        return;
+    }
+    // Detect existing fields like 'product_1', 'product_2', etc.
+    const matchingFields = pdfFields
+        .map(f => f.getName())
+        .filter(name => name.startsWith(baseFieldName + "_"))
+        .sort((a, b) => {
+            const numA = parseInt(a.split("_")[1], 10);
+            const numB = parseInt(b.split("_")[1], 10);
+            return numA - numB;
+        });
+
+    const count = matchingFields.length;
+    const chunks = splitTextIntoChunks(fullText, count);
+
+    console.log(`Found ${count} fields for "${baseFieldName}":`, matchingFields);
+
+    for (let i = 0; i < count; i++) {
+        const fieldName = `${baseFieldName}_${i + 1}`;
+        try {
+            form.getTextField(fieldName).setText(chunks[i] || "");
+        } catch (e) {
+            console.warn(`Could not set field: ${fieldName}`, e);
+        }
+    }
+}
+
 async function loadAndFillForm(path, fields) {
     const existingPdfBytes = await fetch(path).then(res => res.arrayBuffer());
     const pdfDoc = await PDFLib.PDFDocument.load(existingPdfBytes);
@@ -168,15 +230,41 @@ async function loadAndFillForm(path, fields) {
 
     const pdfFields = form.getFields();
 
+    const processedFieldGroups = new Set();
 
     for (const pdfField of pdfFields) {
         const name = pdfField.getName();
         const type = pdfField.constructor.name; // Detect type: PDFTextField, PDFCheckBox, etc.
+        
+        let baseFieldName = null;
 
+        if (name.includes("product_")) baseFieldName = "product";
+        else if (name.includes("living_conditions")) baseFieldName = "living_conditions";
+
+        if (baseFieldName && !processedFieldGroups.has(baseFieldName)) {
+            
+            const baseFieldName = name.includes("product") ? "product" : "living_conditions";
+            const productData = DEBUG_MODE ? DUMMY_PRODUCT_DATA : getProductData();
+
+            let productType = null;
+            if (productData.bathtub_to_shower) productType = 'bathtub_to_shower';
+            if (productData.shower_to_shower) productType = 'shower_to_shower';
+            if (productData.raised_toilet) productType = 'raised_toilet';
+
+            const productDefinitions = getProductDefinitions(productType);
+            const fullText = baseFieldName === "product"
+                ? (productDefinitions?.description ?? "")
+                : (productDefinitions?.reason ?? "");
+
+            fillMultiFieldGroup(baseFieldName, fullText, form, pdfFields);
+            processedFieldGroups.add(baseFieldName);
+            continue;
+        }
+        
         if (!(name in fields)) continue; // Skip if not in provided data
 
         const value = fields[name];
-        console.log(`Setting field "${name}" (type: ${type}) to value: ${value}`);
+        // console.log(`Setting field "${name}" (type: ${type}) to value: ${value}`);
 
         if (type === 'r') {
             form.getTextField(name).setText(value);
@@ -201,29 +289,6 @@ async function loadAndFillForm(path, fields) {
     return pdfDoc;
 }
 
-// async function hideFormField(pdfBytes, fieldName) {
-//   const pdfDoc = await PDFDocument.load(pdfBytes);
-
-//   const form = pdfDoc.getForm();
-//   const field = form.getFieldMaybe(fieldName);
-
-//   if (!field) {
-//     console.log(`Field ${fieldName} not found`);
-//     return;
-//   }
-
-//   // Access the widget annotation(s) of the field
-//   const widgets = field.acroField.getWidgets();
-
-//   for (const widget of widgets) {
-//     const currentFlags = widget.getFlags() || 0;
-//     // Set the Hidden flag (bit 2)
-//     widget.setFlags(currentFlags | 2);
-//   }
-
-//   const modifiedPdfBytes = await pdfDoc.save();
-//   return modifiedPdfBytes;
-// }
 
 async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
     if (signaturePad.isEmpty()) return;
@@ -242,35 +307,9 @@ async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
     signatureField.setText("");
     signatureField.enableReadOnly();
 
-    const rect = getRectsFromField(signatureField, pdfDoc)[0];
     const signatureDataURL = signaturePad.toDataURL();
     const signatureImage = await pdfDoc.embedPng(signatureDataURL);
-    const signatureImageDims = signatureImage.scale(0.25);
     signatureField.setImage(signatureImage)
-
-    // hideFormField(await pdfDoc.save(), fieldName).then(modifiedPdfBytes => {
-    //     const modifiedPdfDoc = PDFLib.PDFDocument.load(modifiedPdfBytes);
-    //     const modifiedForm = modifiedPdfDoc.getForm();
-    //     const modifiedSignatureField = modifiedForm.getTextField(fieldName);
-    //     modifiedSignatureField.setText("");
-    //     modifiedSignatureField.enableReadOnly();
-    // }
-    // );
-    // const page = pdfDoc.getPage(rect.pageNumber + 1); // For some reason I get -1 probably due to the fields not being assigned to a page
-    // const page = pdfDoc.getPage(signaturePage); // For some reason I get -1 probably due to the fields not being assigned to a page
-    // console.log("", pdfDoc.getPageCount(), rect.pageNumber, signaturePage, page.getSize());
-    // console.log("Signature Rect:", rect, "Page Number:", rect.pageNumber, "Signature Page:", signaturePage);
-    // console.log("Signature Image Dimensions:", signatureImageDims);
-    // console.log("Signature Image:", signatureImage);
-    // console.log("Signature Field:", signatureField);
-    // console.log("x:", rect.x, "y:", rect.y, "width:", signatureImageDims.width, "height:", signatureImageDims.height);
-
-    // page.drawImage(signatureImage, {
-    //     x: rect.x,
-    //     y: rect.y, // - rect.height + signatureImageDims.height, // Adjust y to align with the field
-    //     width: signatureImageDims.width,
-    //     height: signatureImageDims.height
-    // });
 }
 
 function getProductData() {
@@ -336,7 +375,7 @@ function getProductData() {
 
         // Extras 
         other_services: document.querySelector('input[name="other_services"]').checked,
-        other_services_text: document.querySelector('input[name="other_services_text"]').value || "",
+        other_services_text: document.querySelector('input[name="other_services_details"]').value || "",
         
         // Costs
         costs: document.querySelector('input[name="costs"]').value || "0"
@@ -367,7 +406,6 @@ function getFormData() {
 
 
 async function generatePdf() {
-    // const formData = {
     let formData = DEBUG_MODE ? DUMMY_DATA : getFormData();
 
     let productData = DEBUG_MODE ? DUMMY_PRODUCT_DATA : getProductData();
@@ -376,12 +414,7 @@ async function generatePdf() {
         formData.insurance_provider = document.getElementById("insurance_provider_other").value;
     }
 
-
-    // const zip_city = `${formData.zip_code} ${formData.city}`;
-
-    // const pdfDefinitions = getPdfDefinitions(formData, full_name, address, formattedDate, zip_city);
     const pdfDefinitions = getPdfDefinitions(formData, productData);
-    // const pdfTest = [pdfDefinitions[0], pdfDefinitions[6]];
 
     // if other insurance is selected, add the text to the insurance_provider field
     if (formData.insurance_provider === 'Andere') {

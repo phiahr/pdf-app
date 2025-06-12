@@ -160,10 +160,15 @@ input {
 select {
     padding: 0.75rem;
     font-size: 1rem;
+    line-height: 1.5;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     background-color: white;
     color: black;
+    /* appearance: none;           
+    -webkit-appearance: none;    
+    -moz-appearance: none;  */
+    height: 45px;                /* Optional: explicitly match input height */
 }
 
 

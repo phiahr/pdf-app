@@ -63,7 +63,7 @@ export function getPdfDefinitions(formData, productData) {
   const current_loc_and_date = `${current_location}, ${formattedDate}`;
   const zip_city = `${formData.zip_code} ${formData.city}`;
 
-  const birthdate = new DateFormatter(formData.birthdate);
+  let birthdate = new DateFormatter(formData.birthdate);
   const birthdate_limited = `${birthdate.getDay()}${birthdate.getMonth()}${birthdate.getYear()}`;
 
 
@@ -74,6 +74,7 @@ export function getPdfDefinitions(formData, productData) {
     full_name_rev: full_name_rev,
     address: address,
     current_date: formattedDate,
+    current_location: current_location,
     current_loc_and_date: current_loc_and_date,
     zip_city: zip_city,
     iban: iban,
@@ -127,6 +128,7 @@ export function getPdfDefinitions(formData, productData) {
     if (sanitizedProvider === "tk" ){
       providerName = "Techniker Krankenkasse";
     }
+
 
     fields.insurance_provider = providerName;
     definitions.push({
