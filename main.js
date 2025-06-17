@@ -4,11 +4,11 @@ import { getProductDefinitions } from "./productConfig.js";
 
 
 // CONSTANTS
-
-
 const DEBUG_MODE = false;
 
 const COSTS = "bis 4180.00"; // Default costs for the product
+
+const EXTRA_DEFAULT_CHECKS = ["ease_care", "enable_care", "self_sufficiency"];
 
 // deprecated
 const PRICE_LIST = {
@@ -48,7 +48,7 @@ const DUMMY_DATA = {
     last_name: "Mustermann",
     birthdate: "1990-01-01",
     insurance_number: "0123456789",
-    insurance_provider: "AOK",
+    insurance_provider: "tk",
     insurance_provider_other: "",
     street: "Musterstraße 1",
     zip_code: "12345",
@@ -242,7 +242,7 @@ function splitTextIntoChunks(text, count) {
 }
 
 function fillMultiFieldGroup(baseFieldName, fullText, form, pdfFields) {
-    console.log(`Fille Multi Group "${baseFieldName}" (text: ${fullText})`);
+    console.log(`Fill Multi Group "${baseFieldName}" (text: ${fullText})`);
         const singleField = pdfFields.find(f => f.getName() === baseFieldName);
     
     if (singleField) {
@@ -269,6 +269,7 @@ function fillMultiFieldGroup(baseFieldName, fullText, form, pdfFields) {
         const fieldName = `${baseFieldName}_${i + 1}`;
         try {
             form.getTextField(fieldName).setText(chunks[i] || "");
+            form.getTextField(fieldName).setFontSize(9);
         } catch (e) {
             console.warn(`Could not set field: ${fieldName}`, e);
         }
@@ -290,7 +291,7 @@ async function loadAndFillForm(path, fields) {
         
         let baseFieldName = null;
 
-        if (name.includes("product_")) baseFieldName = "product";
+        if (name.includes("product")) baseFieldName = "product";
         else if (name.includes("living_conditions")) baseFieldName = "living_conditions";
 
         if (baseFieldName && !processedFieldGroups.has(baseFieldName)) {
@@ -299,18 +300,29 @@ async function loadAndFillForm(path, fields) {
             const productData = DEBUG_MODE ? DUMMY_PRODUCT_DATA : getProductData();
 
             let productType = null;
-            if (productData.bathtub_to_shower) productType = 'bathtub_to_shower';
-            if (productData.shower_to_shower) productType = 'shower_to_shower';
-            if (productData.raised_toilet) productType = 'raised_toilet';
 
-            const productDefinitions = getProductDefinitions(productType);
+            
+            // if (productData.bathtub_to_shower) productType = 'bathtub_to_shower';
+            // if (productData.shower_to_shower) productType = 'shower_to_shower';
+            // if (productData.raised_toilet) productType = 'raised_toilet';
+
+            // const productDefinitions = getProductDefinitions(productType);
+            const productDefinitions = getProductDefinitions([productData]);
+            
+            
             const fullText = baseFieldName === "product"
                 ? (productDefinitions?.description ?? "")
                 : (productDefinitions?.reason ?? "");
+            
+                console.log(fullText);
 
             fillMultiFieldGroup(baseFieldName, fullText, form, pdfFields);
             processedFieldGroups.add(baseFieldName);
             continue;
+        }
+
+        if (name.includes("default_check") || EXTRA_DEFAULT_CHECKS.includes(name)){
+            form.getCheckBox(name).check();
         }
         
         if (!(name in fields)) continue; // Skip if not in provided data
@@ -360,6 +372,9 @@ async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
 
     const signatureDataURL = signaturePad.toDataURL();
     const signatureImage = await pdfDoc.embedPng(signatureDataURL);
+    
+
+
     signatureField.setImage(signatureImage)
 }
 

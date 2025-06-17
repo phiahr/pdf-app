@@ -1,4 +1,6 @@
-const CACHE_NAME = 'pdf-app-v1';
+const CACHE_NAME = 'pdf-app-v2';
+
+// TODO: Automaize the list of assets to cache
 const ASSETS_TO_CACHE = [
     '/',
 
@@ -24,15 +26,14 @@ const ASSETS_TO_CACHE = [
     '/assets/Vollmacht.pdf',
 
     // insurance provider PDF files
-    '/assets/insurance_providers/aok.pdf',
-    '/assets/insurance_providers/barmer.pdf',
-    '/assets/insurance_providers/bkk.pdf',
-    '/assets/insurance_providers/dak.pdf',
-    '/assets/insurance_providers/ikk.pdf',
-    '/assets/insurance_providers/kkh.pdf',
-    '/assets/insurance_providers/knappschaft.pdf',
-    '/assets/insurance_providers/other.pdf',
-    '/assets/insurance_providers/tk.pdf',
+    // '/assets/insurance_providers/aok.pdf',
+    // '/assets/insurance_providers/barmer.pdf',
+    // '/assets/insurance_providers/dak.pdf',
+    // '/assets/insurance_providers/ikk.pdf',
+    // '/assets/insurance_providers/kkh.pdf',
+    // '/assets/insurance_providers/knappschaft.pdf',
+    // '/assets/insurance_providers/other.pdf',
+    // '/assets/insurance_providers/tk.pdf',
 ];
 
 // Install: Dateien vorab cachen

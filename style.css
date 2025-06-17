@@ -17,7 +17,7 @@ h2 {
     width: 100%;
     /* background-color: #0A3548; */
     background-color: #0A3649;
-    padding: 1.5rem 2rem;
+    /* padding: 1.5rem 2rem; */
     color: white;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     border-radius: 0.5rem;
@@ -92,6 +92,43 @@ form {
     }
 }
 
+@media (max-width: 768px) {
+    .form-sections {
+        flex-direction: column;
+    }
+
+    .personal-info,
+    .products {
+        width: 100%;
+    }
+}
+
+/* .form-sections {
+    width: 100%;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+} */
+
+@media screen and (max-width: 390px) {
+    body {
+        padding: 1rem;
+    }
+
+    form {
+        padding: 1rem;
+    }
+
+    .form-sections {
+        gap: 1rem;
+    }
+}
+
+
 .personal-info,
 .services {
     flex: 1;
@@ -108,12 +145,31 @@ form {
     background-color: #fefefe;
 }
 
+form,
+.form-sections,
+.personal-info,
+.products {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
 .signature-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.75rem;
 }
+
+/* label {
+    display: block;
+    word-wrap: break-word;
+    max-width: 100%;
+} */
+
+/* input[type="checkbox"],
+input[type="radio"] {
+    margin-right: 0.5rem;
+} */
 
 /* .gender-options {
     display: flex;
@@ -196,6 +252,21 @@ canvas {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* #signature-pad {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background: #f3f4f6;
+} */
+
+#signature-pad {
+    width: 100%;
+    max-width: 500px;
+    height: 150px;
+    border: 1px solid #ccc;
+}
+
 #save-pdf:disabled {
     background: #9ca3af;
     cursor: not-allowed;
@@ -211,3 +282,7 @@ canvas {
     /* background-color: #dc2626; */
     background-color: #c81c1c;
 }
+
+/* * {
+  outline: 1px solid red;
+} */

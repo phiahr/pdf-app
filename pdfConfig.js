@@ -11,10 +11,10 @@ const GENERAL_FILES = [
   "Vollmacht.pdf",
 ]
 
+
 const INSURANCE_PROVIDER_FILES = [
   "insurance_providers/aok.pdf",
   "insurance_providers/barmer.pdf",
-  "insurance_providers/bkk.pdf",
   "insurance_providers/dak.pdf",
   "insurance_providers/ikk.pdf",
   "insurance_providers/kkh.pdf",
@@ -58,13 +58,15 @@ export function getPdfDefinitions(formData, productData) {
 });
 
   const full_name = `${formData.first_name} ${formData.last_name}`;
-  const full_name_rev = `${formData.last_name}, ${formData.first_name} `;
+  const full_name_rev = `${formData.last_name}, ${formData.first_name}`;
   const address = `${formData.street}, ${formData.zip_code} ${formData.city}`;
   const current_loc_and_date = `${current_location}, ${formattedDate}`;
   const zip_city = `${formData.zip_code} ${formData.city}`;
 
   let birthdate = new DateFormatter(formData.birthdate);
   const birthdate_limited = `${birthdate.getDay()}${birthdate.getMonth()}${birthdate.getYear()}`;
+  const date = new DateFormatter(Date());
+  console.log("apefkepofpoeafkpoa", date.getDay());
 
 
   let fields = (formData, productData) => ({
@@ -74,6 +76,9 @@ export function getPdfDefinitions(formData, productData) {
     full_name_rev: full_name_rev,
     address: address,
     current_date: formattedDate,
+    current_date_day: date.getDay(),
+    current_date_month: date.getMonth(),
+    current_date_year: date.getYear(),
     current_location: current_location,
     current_loc_and_date: current_loc_and_date,
     zip_city: zip_city,
