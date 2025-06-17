@@ -151,8 +151,8 @@ export function getProductDefinitions(productData) {
         if (element in PRODUCT_CONFIG){
             // console.log(element);
             if (product[element]) {
-                products.description += PRODUCT_CONFIG[element].description;
-                products.reason += PRODUCT_CONFIG[element].reason;
+                products.description += PRODUCT_CONFIG[element].description + " ";
+                products.reason += PRODUCT_CONFIG[element].reason + " ";
             }
         }
         // console.log("element:", typeof(productData[0][element]));

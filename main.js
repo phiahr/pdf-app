@@ -158,31 +158,24 @@ const landlordSelect = document.getElementById('toggle_landlord');
 // deprecated
 // const costsInput = form.querySelector("input[name='costs']");
 
+let latestPDFBytesArray = [];
 
 const signaturePad = new SignaturePad(canvas);
 
-function fixCanvasSize() {
+
+// Resize canvas to match display size
+function resizeCanvasToDisplaySize() {
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
     canvas.height = rect.height;
 }
-fixCanvasSize();
+resizeCanvasToDisplaySize();
 
 window.addEventListener("resize", () => {
-  fixCanvasSize(canvas);
+  resizeCanvasToDisplaySize();
 });
 
-
-function resizeSignaturePad() {
-  resizeCanvasToDisplaySize(canvas);
-  signaturePad.clear(); // because resize erases the content
-}
-
-window.addEventListener("resize", resizeSignaturePad);
-
-
-let latestPDFBytesArray = [];
-
+// Register Service Worker if available
 if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
         navigator.serviceWorker.register("/service-worker.js")
