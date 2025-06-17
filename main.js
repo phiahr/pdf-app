@@ -161,6 +161,26 @@ const landlordSelect = document.getElementById('toggle_landlord');
 
 const signaturePad = new SignaturePad(canvas);
 
+function fixCanvasSize() {
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+}
+fixCanvasSize();
+
+window.addEventListener("resize", () => {
+  fixCanvasSize(canvas);
+});
+
+
+function resizeSignaturePad() {
+  resizeCanvasToDisplaySize(canvas);
+  signaturePad.clear(); // because resize erases the content
+}
+
+window.addEventListener("resize", resizeSignaturePad);
+
+
 let latestPDFBytesArray = [];
 
 if ("serviceWorker" in navigator) {

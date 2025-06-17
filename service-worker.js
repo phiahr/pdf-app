@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pdf-app-v2';
+const CACHE_NAME = 'pdf-app-v1';
 
 // TODO: Automaize the list of assets to cache
 const ASSETS_TO_CACHE = [
