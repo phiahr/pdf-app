@@ -37,13 +37,13 @@
                     </div>
 
                     <!-- Basic Inputs -->
-                    <input type="text" id="first_name" placeholder="Vorname" />
-                    <input type="text" id="last_name" placeholder="Nachname" />
-                    <input type="text" id="birthdate" placeholder="Geburtsdatum" />
-                    <input type="text" id="insurance_number" placeholder="Versicherungsnummer" />
+                    <input type="text" id="first_name" placeholder="Vorname" required />
+                    <input type="text" id="last_name" placeholder="Nachname" required />
+                    <input type="text" id="birthdate" placeholder="Geburtsdatum" required />
+                    <input type="text" id="insurance_number" placeholder="Versicherungsnummer" required />
 
                     <!-- Insurance Dropdown -->
-                    <select id="insurance_provider">
+                    <select id="insurance_provider" required>
                         <option value="">Versicherung auswählen</option>
                         <option value="AOK">AOK</option>
                         <option value="Barmer">Barmer</option>
@@ -67,7 +67,9 @@
                     <input type="text" id="zip" placeholder="PLZ" />
                     <input type="text" id="city" placeholder="Ort" />
                     <input type="text" id="reference" placeholder="Empfohlen von" />
-                    <select id="care_level">
+
+
+                    <select id="care_level" required>
                         <option value="">Pflegegrad auswählen</option>
                         <option value="level_1">Pflegegrad 1</option>
                         <option value="level_2">Pflegegrad 2</option>
@@ -76,6 +78,7 @@
                         <option value="level_5">Pflegegrad 5</option>
                     </select>
 
+                    <label><input type="checkbox" id="aid_fund" name="aid_fund" /> Beihilfekasse?</label>
 
                     <!-- Elevator Field -->
                     <label>Etage</label>
@@ -97,16 +100,18 @@
 
                     <!-- Diagnosis -->
                     <label>Diagnose:</label>
-                    <div class="diagnosis-options">
+                    <div class="diagnosis-options" id="diagnosis">
                         <label><input type="checkbox" id="bed" /> Nur im Bett</label>
-    <label><input type="checkbox" id="walk" /> Gangunsicherheit</label>
-    <label><input type="checkbox" id="walker" /> Rollator</label>
-    <label><input type="checkbox" id="wheelchair" /> Rollstuhl </label>
+                        <label><input type="checkbox" id="walk" /> Gangunsicherheit</label>
+                        <label><input type="checkbox" id="walker" /> Rollator</label>
+                        <label><input type="checkbox" id="wheelchair" /> Rollstuhl </label>
                         <div>
                             <label><input type="checkbox" id="always" /> Immer?</label>
                         </div>
                     </div>
                     <input type="text" id="other_diagnosis" placeholder="Weitere Diagnosen" />
+
+
 
 
                     <!-- Care Taker Toggle -->
@@ -138,7 +143,7 @@
                     </div>
                 </div>
 
-                <div class="products">
+                <div class="products" id="product-options">
                     <fieldset>
                         <legend><strong>Gewünschte Leistung:</strong></legend>
 
@@ -234,6 +239,11 @@
                     </fieldset>
                 </div>
             </div>
+            <div class="date-picker-container">
+                <label for="signing-date">Datum der Unterschrift</label>
+                <input type="date" id="signing-date" name="signing-date" required>
+            </div>
+
             <button type="submit">PDF generieren</button>
             <button type="reset">Formular zurücksetzen</button>
 
@@ -241,6 +251,9 @@
 
         <h2>Unterschrift</h2>
         <div class="signature-container">
+            <p id="signature-disclaimer">
+                Hiermit bestätige ich, dass ich die Anlagen 1 bis 8 gelesen habe und mit deren Inhalt einverstanden bin.
+            </p>
             <canvas id="signature-pad" width="500" height="150" style="border:1px solid #ccc"></canvas>
             <div class="signature-buttons">
                 <button id="clear-signature">Unterschrift löschen</button>
@@ -254,6 +267,8 @@
         <script src="libs/signature_pad.min.js"></script>
         <!-- FileSaver -->
         <script src="libs/FileSaver.min.js"></script>
+        <!-- jszip -->
+        <script src="libs/jszip.min.js"></script>
 
         <!-- Custom JavaScript -->
         <!-- <script src="main.js"></script> -->

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pdf-app-v1';
+const CACHE_NAME = 'pdf-app-v3';
 
 // TODO: Automaize the list of assets to cache
 const ASSETS_TO_CACHE = [
@@ -12,28 +12,31 @@ const ASSETS_TO_CACHE = [
     '/libs/pdf-lib.min.js',
     '/libs/signature_pad.min.js',
     '/libs/FileSaver.min.js',
+    '/libs/jszip.min.js',
 
     // icons
     '/icons/icon-192.png',
     '/icons/icon-512.png',
 
     // general PDF files
-    '/assets/AGB.pdf',
-    '/assets/Annahme.pdf',
-    '/assets/Auftragsbestaetigung.pdf',
-    '/assets/Datenschutz.pdf',
-    '/assets/Stammblatt.pdf',
-    '/assets/Vollmacht.pdf',
+    '/assets/v1_Stammblatt.pdf',
+    '/assets/v2_Widerrufsbelehrung.pdf',
+    '/assets/v3_Auskunft.pdf',
+    '/assets/v4_Datenschutz.pdf',
+    '/assets/v5_Vollmacht.pdf',
+    '/assets/v6_Annahme.pdf',
+    '/assets/v7_Auftragsbestaetigung.pdf',
+    '/assets/v8_AGB.pdf',
 
     // insurance provider PDF files
-    // '/assets/insurance_providers/aok.pdf',
-    // '/assets/insurance_providers/barmer.pdf',
-    // '/assets/insurance_providers/dak.pdf',
-    // '/assets/insurance_providers/ikk.pdf',
-    // '/assets/insurance_providers/kkh.pdf',
-    // '/assets/insurance_providers/knappschaft.pdf',
-    // '/assets/insurance_providers/other.pdf',
-    // '/assets/insurance_providers/tk.pdf',
+    '/assets/insurance_providers/aok.pdf',
+    '/assets/insurance_providers/barmer.pdf',
+    '/assets/insurance_providers/dak.pdf',
+    '/assets/insurance_providers/ikk.pdf',
+    '/assets/insurance_providers/kkh.pdf',
+    '/assets/insurance_providers/knappschaft.pdf',
+    '/assets/insurance_providers/other.pdf',
+    '/assets/insurance_providers/tk.pdf',
 ];
 
 // Install: Dateien vorab cachen

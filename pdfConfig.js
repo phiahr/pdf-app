@@ -3,12 +3,14 @@
 
 // CONSTANTS 
 const GENERAL_FILES = [
-  "Stammblatt.pdf",
-  "Auftragsbestaetigung.pdf",
-  "Annahme.pdf",
-  "Datenschutz.pdf",
-  "AGB.pdf",
-  "Vollmacht.pdf",
+  "v1_Stammblatt.pdf",
+  "v2_Widerrufsbelehrung.pdf",
+  "v3_Auskunft.pdf",
+  "v4_Datenschutz.pdf",
+  "v5_Vollmacht.pdf",
+  "v6_Annahme.pdf",
+  "v7_Auftragsbestaetigung.pdf",
+  "v8_AGB.pdf",
 ]
 
 
@@ -53,7 +55,8 @@ class DateFormatter {
 }
 
 export function getPdfDefinitions(formData, productData) {
-  const formattedDate = new Date().toLocaleDateString('de-DE', {
+  
+  const formattedDate = new Date(formData.signatureDate).toLocaleDateString('de-DE', {
     year: 'numeric', month: '2-digit', day: '2-digit'
 });
 
@@ -67,6 +70,9 @@ export function getPdfDefinitions(formData, productData) {
   const birthdate_limited = `${birthdate.getDay()}${birthdate.getMonth()}${birthdate.getYear()}`;
   const date = new DateFormatter(Date());
   console.log("apefkepofpoeafkpoa", date.getDay());
+
+  const care_taker_full_name = `${formData.care_taker_first_name} ${formData.care_taker_last_name}`;
+  const care_taker_address = `${formData.care_taker_street}, ${formData.care_taker_zip_city}`;
 
 
   let fields = (formData, productData) => ({
@@ -82,6 +88,8 @@ export function getPdfDefinitions(formData, productData) {
     current_location: current_location,
     current_loc_and_date: current_loc_and_date,
     zip_city: zip_city,
+    care_taker_full_name: care_taker_full_name,
+    care_taker_address: care_taker_address,
     iban: iban,
     bic: bic,
     bank_name: bank_name,

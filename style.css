@@ -255,6 +255,12 @@ canvas {
     background: #f3f4f6;
 } */
 
+.date-picker-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
 .signature-container {
     display: flex;
     flex-direction: column;
@@ -269,6 +275,15 @@ canvas {
     /* border: 1px solid #ccc; */
     
 }
+
+#signature-disclaimer {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem; /* space above signature pad */
+  max-width: 600px;
+  line-height: 1.4;
+}
+
 
 #save-pdf:disabled {
     background: #9ca3af;

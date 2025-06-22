@@ -5,6 +5,20 @@ import { getProductDefinitions } from "./productConfig.js";
 
 // CONSTANTS
 const DEBUG_MODE = false;
+if (DEBUG_MODE) {
+  const tag = document.createElement("div");
+  tag.textContent = "DEBUG MODE: Validation Disabled";
+  tag.style.color = "red";
+  tag.style.fontSize = "0.9rem";
+  tag.style.fontWeight = "bold";
+  tag.style.marginBottom = "1rem";
+  document.body.prepend(tag);
+    window.addEventListener("DOMContentLoaded", () => {
+    const requiredElements = document.querySelectorAll("[required]");
+    requiredElements.forEach(el => el.removeAttribute("required"));
+    console.log("DEBUG_MODE is ON — all required attributes removed.");
+  });
+}
 
 const COSTS = "bis 4180.00"; // Default costs for the product
 
@@ -56,6 +70,7 @@ const DUMMY_DATA = {
     email: "max.mustermann@gmail.com",
     phone_number: "0123456789",
     reference: "Dr. Beispiel",
+    signatureDate: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
 
     // Gender
     male: true,
@@ -63,43 +78,44 @@ const DUMMY_DATA = {
 
     // Care Level & Floor
     care_level: "2",
+    aid_fund: false,
     floor: "2",
     elevator: true,
 
     // Diagnosis
     // diagnosis: {
-        bed: false,
-        walk: true,
-        walker: false,
-        wheelchair: true,
-        always: true,
-        other_diagnosis: "Diabetes Typ 2",
+    bed: false,
+    walk: true,
+    walker: false,
+    wheelchair: true,
+    always: true,
+    other_diagnosis: "Diabetes Typ 2",
     // },
 
     // Care Taker
     care_taker_enabled: true,
     // care_taker: {
-        care_taker_first_name: "Anna",
-        care_taker_last_name: "Musterfrau",
-        care_taker_street: "Betreuerweg 5",
-        care_taker_zip_city: "54321 Betreuerstadt",
-        care_taker_phone_number: "0987654321",
-        care_taker_mail: "anna.musterfrau@example.com",
-        care_taker_fax: "0987654322",
+    care_taker_first_name: "Anna",
+    care_taker_last_name: "Musterfrau",
+    care_taker_street: "Betreuerweg 5",
+    care_taker_zip_city: "54321 Betreuerstadt",
+    care_taker_phone_number: "0987654321",
+    care_taker_mail: "anna.musterfrau@example.com",
+    care_taker_fax: "0987654322",
     // },
 
     // Landlord
     landlord_enabled: true,
     // landlord: {
-        landlord_full_name: "Herr Vermieter",
-        landlord_street: "Vermieterstraße 10",
-        landlord_zip_city: "11111 Mietstadt",
-        landlord_phone_number: "030123456",
-        landlord_fax: "030123457"
+    landlord_full_name: "Herr Vermieter",
+    landlord_street: "Vermieterstraße 10",
+    landlord_zip_city: "11111 Mietstadt",
+    landlord_phone_number: "030123456",
+    landlord_fax: "030123457"
     // }
 };
 
-['bed', 'walk', 'walker', 'wheelchair', 'always'].forEach((key) => {
+['bed', 'walk', 'walker', 'wheelchair', 'always', 'elevator', 'aid_fund'].forEach((key) => {
     console.log(`Adding boolean fields for ${key} set to ${DUMMY_DATA[key]}`);
     DUMMY_DATA[`${key}_yes`] = DUMMY_DATA[key] === true;
     DUMMY_DATA[`${key}_no`] = DUMMY_DATA[key] === false;
@@ -155,6 +171,13 @@ const otherInsuranceInput = document.getElementById('insurance_provider_other');
 const careTakerSelect = document.getElementById('toggle_care_taker');
 const landlordSelect = document.getElementById('toggle_landlord');
 
+document.addEventListener("DOMContentLoaded", () => {
+    const dateInput = document.getElementById("signing-date");
+    const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
+    dateInput.value = today;
+});
+
+
 // deprecated
 // const costsInput = form.querySelector("input[name='costs']");
 
@@ -165,14 +188,24 @@ const signaturePad = new SignaturePad(canvas);
 
 // Resize canvas to match display size
 function resizeCanvasToDisplaySize() {
+    if (!signaturePad) return;
+
+    // Save the current signature data
+    const data = signaturePad.toData();
+
+    // Resize the canvas
     const rect = canvas.getBoundingClientRect();
     canvas.width = rect.width;
     canvas.height = rect.height;
+
+    // Reapply the signature data
+    signaturePad.clear(); // Clear first
+    signaturePad.fromData(data);
 }
 resizeCanvasToDisplaySize();
 
 window.addEventListener("resize", () => {
-  resizeCanvasToDisplaySize();
+    resizeCanvasToDisplaySize();
 });
 
 // Register Service Worker if available
@@ -256,8 +289,8 @@ function splitTextIntoChunks(text, count) {
 
 function fillMultiFieldGroup(baseFieldName, fullText, form, pdfFields) {
     console.log(`Fill Multi Group "${baseFieldName}" (text: ${fullText})`);
-        const singleField = pdfFields.find(f => f.getName() === baseFieldName);
-    
+    const singleField = pdfFields.find(f => f.getName() === baseFieldName);
+
     if (singleField) {
         console.log(`Using single multiline field: ${baseFieldName}`);
         form.getTextField(baseFieldName).setText(fullText);
@@ -301,48 +334,43 @@ async function loadAndFillForm(path, fields) {
     for (const pdfField of pdfFields) {
         const name = pdfField.getName();
         const type = pdfField.constructor.name; // Detect type: PDFTextField, PDFCheckBox, etc.
-        
+
         let baseFieldName = null;
 
         if (name.includes("product")) baseFieldName = "product";
         else if (name.includes("living_conditions")) baseFieldName = "living_conditions";
 
         if (baseFieldName && !processedFieldGroups.has(baseFieldName)) {
-            
+
             const baseFieldName = name.includes("product") ? "product" : "living_conditions";
             const productData = DEBUG_MODE ? DUMMY_PRODUCT_DATA : getProductData();
 
             let productType = null;
 
-            
-            // if (productData.bathtub_to_shower) productType = 'bathtub_to_shower';
-            // if (productData.shower_to_shower) productType = 'shower_to_shower';
-            // if (productData.raised_toilet) productType = 'raised_toilet';
-
-            // const productDefinitions = getProductDefinitions(productType);
             const productDefinitions = getProductDefinitions([productData]);
-            
-            
+
+
             const fullText = baseFieldName === "product"
                 ? (productDefinitions?.description ?? "")
                 : (productDefinitions?.reason ?? "");
-            
-                console.log(fullText);
+
+            console.log(fullText);
 
             fillMultiFieldGroup(baseFieldName, fullText, form, pdfFields);
             processedFieldGroups.add(baseFieldName);
             continue;
         }
 
-        if (name.includes("default_check") || EXTRA_DEFAULT_CHECKS.includes(name)){
+        if (name.includes("default_check") || EXTRA_DEFAULT_CHECKS.includes(name)) {
             form.getCheckBox(name).check();
         }
-        
+
         if (!(name in fields)) continue; // Skip if not in provided data
 
         const value = fields[name];
-        console.log(`Setting field "${name}" (type: ${type}) to value: ${value}`);
+        console.log(`Setting field ${name} (type: ${type}) to value: ${value}`);
 
+        console.log(`constructor name: ${pdfField.constructor.name}, type: ${type}`)
         if (type === 'r') {
             form.getTextField(name).setText(value);
             // if count in name, set the alignment to right
@@ -385,7 +413,7 @@ async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
 
     const signatureDataURL = signaturePad.toDataURL();
     const signatureImage = await pdfDoc.embedPng(signatureDataURL);
-    
+
 
 
     signatureField.setImage(signatureImage)
@@ -455,7 +483,7 @@ function getProductData() {
         // Extras 
         // other_services: document.querySelector('input[name="other_products"]').checked,
         other_products: document.querySelector('input[name="other_products_details"]').value || "",
-        
+
         // Costs
         // costs: document.querySelector('input[name="costs"]').value || "0"
         costs: COSTS // Use the constant COSTS for default value
@@ -479,54 +507,57 @@ function getFormData() {
         email: document.getElementById("email").value,
         phone_number: document.getElementById("phone").value,
         reference: document.getElementById("reference").value,
+        signatureDate: document.getElementById("signing-date").value,
 
         // Gender
         male: document.getElementById("gender_male").checked,
         female: document.getElementById("gender_female").checked,
 
         // Care Level & Floor
+        aid_fund: document.getElementById("aid_fund").checked,
         care_level: document.getElementById("care_level").value.split("_")[1] || "",
+
         floor: document.getElementById("floor").value,
-        
         elevator: document.getElementById("elevator").checked,
         // Diagnosis
         // diagnosis: {
-            bed: document.getElementById('bed').checked,
-            walk: document.getElementById('walk').checked,
-            walker: document.getElementById('walker').checked,
-            wheelchair: document.getElementById('wheelchair').checked,
-            always: document.getElementById('always').checked,
-            other_diagnosis: document.getElementById("other_diagnosis").value,
+        bed: document.getElementById('bed').checked,
+        walk: document.getElementById('walk').checked,
+        walker: document.getElementById('walker').checked,
+        wheelchair: document.getElementById('wheelchair').checked,
+        always: document.getElementById('always').checked,
+        other_diagnosis: document.getElementById("other_diagnosis").value,
         // },
 
         // Care Taker
         // care_taker_enabled: document.getElementById("toggle_care_taker").checked,
         // care_taker: document.getElementById("toggle_care_taker").checked ? {
-            care_taker_first_name: document.getElementById('care_taker_first_name').value,
-            care_taker_last_name: document.getElementById('care_taker_last_name').value,
-            care_taker_street: document.getElementById('care_taker_street').value,
-            care_taker_zip_city: document.getElementById('care_taker_zip_city').value,
-            care_taker_phone: document.getElementById('care_taker_phone').value,
-            care_taker_email: document.getElementById('care_taker_email').value,
-            care_taker_fax: document.getElementById('care_taker_fax').value,
+        care_taker_first_name: document.getElementById('care_taker_first_name').value,
+        care_taker_last_name: document.getElementById('care_taker_last_name').value,
+        care_taker_street: document.getElementById('care_taker_street').value,
+        care_taker_zip_city: document.getElementById('care_taker_zip_city').value,
+        care_taker_phone: document.getElementById('care_taker_phone').value,
+        care_taker_email: document.getElementById('care_taker_email').value,
+        care_taker_fax: document.getElementById('care_taker_fax').value,
         // } : null,
 
         // Landlord
         // landlord_enabled: document.getElementById("toggle_landlord").checked,
         // landlord: document.getElementById("toggle_landlord").checked ? {
-            landlord_full_name: document.getElementById('landlord_full_name').value,
-            landlord_street: document.getElementById('landlord_street').value,
-            landlord_zip_city: document.getElementById('landlord_zip_city').value,
-            landlord_phone: document.getElementById('landlord_phone').value,
-            landlord_fax: document.getElementById('landlord_fax').value
+        landlord_full_name: document.getElementById('landlord_full_name').value,
+        landlord_street: document.getElementById('landlord_street').value,
+        landlord_zip_city: document.getElementById('landlord_zip_city').value,
+        landlord_phone: document.getElementById('landlord_phone').value,
+        landlord_fax: document.getElementById('landlord_fax').value
         // } : null
     };
 
     // Convert boolean fields to yes/no fields
-    ['bed', 'walk', 'walker', 'wheelchair', 'always'].forEach((key) => {
-    formData[`${key}_yes`] = formData[key] === true;
-    formData[`${key}_no`] = formData[key] === false;
-});
+    ['bed', 'walk', 'walker', 'wheelchair', 'always', 'elevator', 'aid_fund'].forEach((key) => {
+        console.log('AID_FUND', formData[key])
+        formData[`${key}_yes`] = formData[key] === true;
+        formData[`${key}_no`] = formData[key] === false;
+    });
 
     return formData;
 }
@@ -556,7 +587,6 @@ async function generatePdf() {
         latestPDFBytesArray.push(await pdfDoc.save());
     }
 
-
     saveBtn.disabled = false;
 }
 
@@ -580,7 +610,13 @@ landlordSelect.addEventListener('change', function () {
 }
 );
 
+function isIos() {
+    return /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+}
 
+function isInStandaloneMode() {
+    return ('standalone' in window.navigator) && (window.navigator.standalone);
+}
 
 form.addEventListener("reset", () => {
     form.reset();
@@ -590,22 +626,128 @@ form.addEventListener("reset", () => {
     latestPDFBytesArray = [];
 });
 
+// Reset diagnosis validation dynamically
+function setupDiagnosisValidationListeners() {
+  const checkboxes = [
+    document.getElementById("bed"),
+    document.getElementById("walk"),
+    document.getElementById("walker"),
+    document.getElementById("wheelchair"),
+    document.getElementById("always"),
+  ];
+  const otherDiagnosis = document.getElementById("other_diagnosis");
+
+  // When typing into the text field
+  otherDiagnosis.addEventListener("input", () => {
+    otherDiagnosis.setCustomValidity("");
+  });
+
+  // When any checkbox is toggled
+  checkboxes.forEach(cb =>
+    cb.addEventListener("change", () => {
+      otherDiagnosis.setCustomValidity("");
+    })
+  );
+}
+
+setupDiagnosisValidationListeners(); // Call once at the start
+
+function validateDiagnosis(e) {
+    const checkboxes = [
+    document.getElementById("bed"),
+    document.getElementById("walk"),
+    document.getElementById("walker"),
+    document.getElementById("wheelchair"),
+    document.getElementById("always"),
+  ];
+  const otherDiagnosis = document.getElementById("other_diagnosis");
+  const isAnyChecked = checkboxes.some(cb => cb.checked);
+  const isTextFilled = otherDiagnosis.value.trim() !== "";
+
+  console.log('aefe', isAnyChecked, isTextFilled);
+
+  if (!isAnyChecked && !isTextFilled) {
+    e.preventDefault();
+
+    // Show native-like warning near the visible text field
+    otherDiagnosis.setCustomValidity("Bitte mindestens eine Diagnose auswählen oder etwas eingeben.");
+    otherDiagnosis.reportValidity();
+    return false;
+  } else {
+    // Clear any previous custom message
+    otherDiagnosis.setCustomValidity("");
+    return true;
+  }
+
+}
+
+function validateProducts(e) {
+  const productSection = document.getElementById("product-options");
+  const checkboxes = productSection.querySelectorAll('input[type="checkbox"]');
+  const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+
+  if (!isChecked) {
+    e.preventDefault();
+
+    checkboxes.forEach(cb => {
+      cb.setCustomValidity("Bitte mindestens eine Leistung auswählen.");
+    });
+
+    // Show validity message on the first checkbox so the user sees it
+    checkboxes[0].reportValidity();
+    return false;
+  } else {
+    // Clear custom validity on all checkboxes
+    checkboxes.forEach(cb => cb.setCustomValidity(""));
+    return true;
+  }
+}
+
+function setupProductValidationListeners() {
+  const checkboxes = document.querySelectorAll('#product-options input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.addEventListener("change", () => {
+      checkboxes.forEach(c => c.setCustomValidity(""));
+    });
+  });
+}
+setupProductValidationListeners();
+
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!DEBUG_MODE && !validateDiagnosis(e)) return;
+    if (!DEBUG_MODE && !validateProducts(e)) return;
     try {
         await generatePdf();
+        const formData = getFormData();
+        let fileName = `${formData.last_name}_${formData.first_name}`;
         const mergedBytes = await mergePDFs(latestPDFBytesArray);
         const blob = new Blob([mergedBytes], { type: "application/pdf" });
         const url = URL.createObjectURL(blob);
-        window.open(url, "_blank");
+
+        if (isIos() && isInStandaloneMode()) {
+            // iOS PWA — trigger download
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `${fileName}.pdf`;
+            a.style.display = "none";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            console.log("PDF download triggered in iOS PWA.");
+        } else {
+            // Regular browser — open in new tab
+            window.open(url, "_blank");
+            console.log("PDF opened in new tab.");
+        }
     } catch (error) {
         console.error("Error generating PDF:", error);
     }
 });
 
-form.querySelectorAll("input[type='checkbox'], input[type='number']").forEach(input => {
-    input.addEventListener("change", calculateCosts);
-});
+// form.querySelectorAll("input[type='checkbox'], input[type='number']").forEach(input => {
+//     input.addEventListener("change", calculateCosts);
+// });
 
 
 clearBtn.addEventListener("click", () => {
@@ -616,8 +758,23 @@ saveBtn.addEventListener("click", async () => {
     try {
         await generatePdf();
         const mergedBytes = await mergePDFs(latestPDFBytesArray);
+        const shortMergedBytes = await mergePDFs([latestPDFBytesArray[0], latestPDFBytesArray[latestPDFBytesArray.length - 1]]);
         const blob = new Blob([mergedBytes], { type: "application/pdf" });
-        saveAs(blob, "merged.pdf");
+        const blobShort = new Blob([shortMergedBytes], { type: "application/pdf" });
+
+        const formData = getFormData();
+        let fileName = `${formData.last_name}_${formData.first_name}`;
+        const zip = new JSZip();
+        zip.file(`${fileName}_VAG_SBU.pdf`, mergedBytes);
+        zip.file(`${fileName}_Antrag.pdf`, shortMergedBytes);
+        const zipBlob = await zip.generateAsync({ type: "blob" });
+
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = `${fileName}_VAG.zip`;
+        a.click();
+
+        // saveAs(blob, "merged.pdf");
     } catch (error) {
         console.error("Error saving PDF:", error);
     }

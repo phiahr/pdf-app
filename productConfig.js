@@ -21,8 +21,8 @@ const DOOR_WIDENING_REASON = "Die aktuelle Türbreite erlaubt kein Durchkommen m
 const WHEELCHAIR_SINK_DESCRIPTION = "Montage eines unterfahrbaren Waschtisches zur eigenständigen Körperpflege im Sitzen.";
 const WHEELCHAIR_SINK_REASON = "Der Standard-Waschtisch ist nicht nutzbar mit Rollstuhl/Rollator = eigenständige Hygiene ist nicht möglich.";
 
-const BATHTUB_TO_SHOWER_DESCRIPTION = "Umwandlung einer Badewanne in eine bodengleiche Dusche zur sicheren, eigenständigen Körperpflege.";
-const BATHTUB_TO_SHOWER_REASON = "Der Einstieg in die Badewanne ist aufgrund eingeschränkter Beweglichkeit und Sturzgefahr nicht mehr zumutbar.";
+const BATHTUB_TO_SHOWER_DESCRIPTION = "Umwandlung einer Badewanne in eine bodennahe Dusche zur sicheren, eigenständigen Körperpflege.";
+const BATHTUB_TO_SHOWER_REASON = "Der Einstieg in die Badewanne ist aufgrund eingeschränkter Beweglichkeit und Sturzgefahr nicht mehr zumutbar. Ein Wannenlifter ist für mich keine Lösung, da ich meine Beine immer noch nicht selbstständig ohne Hilfe über den Wannenrand gehoben bekomme";
 
 const SHOWER_TO_SHOWER_DESCRIPTION = "Umbau einer vorhandenen Dusche in eine bodennahe, barrierefreie Dusche.";
 const SHOWER_TO_SHOWER_REASON = "Der aktuelle hohe Einstieg stellt ein erhebliches Risiko dar und verhindert eigenständiges Duschen ohne Hilfe.";
