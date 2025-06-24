@@ -21,6 +21,12 @@
                 <h1>Vorabgespräch</h1>
             </div>
         </header>
+
+        <!-- Loading Indicator -->
+        <div id="loading-overlay">
+  <div class="spinner"></div>
+</div>
+
         <!-- <h1>Vorabgespräch</h1> -->
         <form id="data-form">
             <div class="form-sections">
@@ -239,14 +245,18 @@
                     </fieldset>
                 </div>
             </div>
+            
             <div class="date-picker-container">
                 <label for="signing-date">Datum der Unterschrift</label>
                 <input type="date" id="signing-date" name="signing-date" required>
             </div>
 
-            <button type="submit">PDF generieren</button>
-            <button type="reset">Formular zurücksetzen</button>
-
+            <button id="submit-pdf" type="submit">PDF generieren</button>
+            <div class="form-buttons-container">
+                <button class="reset-buttons" id="reset-pdf" type="reset">Formular zurücksetzen</button>
+                <button id="open-pdf" disabled>PDF öffnen</button>
+            </div>
+            
         </form>
 
         <h2>Unterschrift</h2>
@@ -256,7 +266,7 @@
             </p>
             <canvas id="signature-pad" width="500" height="150" style="border:1px solid #ccc"></canvas>
             <div class="signature-buttons">
-                <button id="clear-signature">Unterschrift löschen</button>
+                <button class="reset-buttons" id="clear-signature">Unterschrift löschen</button>
                 <button id="save-pdf" disabled>PDF speichern</button>
             </div>
         </div>

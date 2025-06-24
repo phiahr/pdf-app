@@ -201,6 +201,7 @@ input[type="radio"] {
 } */
 
 
+
 input {
     padding: 0.75rem;
     font-size: 1rem;
@@ -247,6 +248,11 @@ canvas {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+#care_taker-container {
+    gap: 10px;
+    padding: 10px;
+}
+
 /* #signature-pad {
     width: 100%;
     height: 200px;
@@ -267,6 +273,46 @@ canvas {
     align-items: center;
     gap: 0.75rem;
 }
+
+.form-buttons-container {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.form-buttons-container button {
+  flex: 1;
+}
+
+
+#loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.8); /* semi-transparent white */
+  z-index: 9999;
+  display: none; /* Hidden by default */
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  border: 8px solid #f3f3f3; /* Light grey */
+  border-top: 8px solid #0A3649; /* Blue */
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: spin 1s linear infinite;
+}
+
+/* Spinner animation */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 
 #signature-pad {
     width: 100%;
@@ -290,16 +336,31 @@ canvas {
     cursor: not-allowed;
 }
 
+#open-pdf:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+}
+
+.reset-buttons {
+    background-color: #a80f0f;
+}
+
+.reset-buttons:hover {
+    background-color: #c81c1c;
+}
+
 #clear-signature {
     margin-top: 0.5rem;
-    /* background-color: #ef4444; */
+}
+/* 
+#clear-signature {
+    margin-top: 0.5rem;
     background-color: #a80f0f;
 }
 
 #clear-signature:hover {
-    /* background-color: #dc2626; */
     background-color: #c81c1c;
-}
+} */
 
 /* * {
   outline: 1px solid red;

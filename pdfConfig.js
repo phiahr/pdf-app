@@ -26,11 +26,12 @@ const INSURANCE_PROVIDER_FILES = [
 ]
 
 
+// TODO: correct information
 const iban = "00000000000000000000";
 const bic = "0000000000"; // Placeholder for BIC
 const bank_name = "Bank Name"; // Placeholder for Bank Name
-const account_holder = "SBU GmbH"; // Assuming the account holder is the same as the applicant
-const account_holder_address = "SBU GmbH, Musterstraße 1, 12345 Musterstadt"; // Placeholder for account holder address
+const account_holder = "SBU.GmbH"; // Assuming the account holder is the same as the applicant
+const account_holder_address = "SBU.GmbH, Eichborndamm 167, 13403 Berlin"; // Placeholder for account holder address
 
 const current_location = "Berlin";
 
@@ -142,7 +143,6 @@ export function getPdfDefinitions(formData, productData) {
       providerName = "Techniker Krankenkasse";
     }
 
-
     fields.insurance_provider = providerName;
     definitions.push({
       path: `assets/${matchedInsuranceFile}`,
@@ -150,7 +150,7 @@ export function getPdfDefinitions(formData, productData) {
     });
   }
   else {
-    console.warn("No matching insurance provider file found for:", sanitizedProvider);
+    console.log("No matching insurance provider file found for:", sanitizedProvider, "using default form");
     definitions.push({
       path: "assets/insurance_providers/other.pdf",
       fields: fields,

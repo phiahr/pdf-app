@@ -4,20 +4,20 @@ import { getProductDefinitions } from "./productConfig.js";
 
 
 // CONSTANTS
-const DEBUG_MODE = false;
+const DEBUG_MODE = true;
 if (DEBUG_MODE) {
-  const tag = document.createElement("div");
-  tag.textContent = "DEBUG MODE: Validation Disabled";
-  tag.style.color = "red";
-  tag.style.fontSize = "0.9rem";
-  tag.style.fontWeight = "bold";
-  tag.style.marginBottom = "1rem";
-  document.body.prepend(tag);
+    const tag = document.createElement("div");
+    tag.textContent = "DEBUG MODE: Validation Disabled";
+    tag.style.color = "red";
+    tag.style.fontSize = "0.9rem";
+    tag.style.fontWeight = "bold";
+    tag.style.marginBottom = "1rem";
+    document.body.prepend(tag);
     window.addEventListener("DOMContentLoaded", () => {
-    const requiredElements = document.querySelectorAll("[required]");
-    requiredElements.forEach(el => el.removeAttribute("required"));
-    console.log("DEBUG_MODE is ON — all required attributes removed.");
-  });
+        const requiredElements = document.querySelectorAll("[required]");
+        requiredElements.forEach(el => el.removeAttribute("required"));
+        console.log("DEBUG_MODE is ON — all required attributes removed.");
+    });
 }
 
 const COSTS = "bis 4180.00"; // Default costs for the product
@@ -166,10 +166,14 @@ const form = document.getElementById("data-form");
 const saveBtn = document.getElementById("save-pdf");
 const canvas = document.getElementById("signature-pad");
 const clearBtn = document.getElementById("clear-signature");
+const openBtn = document.getElementById("open-pdf");
 const insuranceSelect = document.getElementById('insurance_provider');
 const otherInsuranceInput = document.getElementById('insurance_provider_other');
 const careTakerSelect = document.getElementById('toggle_care_taker');
 const landlordSelect = document.getElementById('toggle_landlord');
+
+const loadingOverlay = document.getElementById("loading-overlay");
+
 
 document.addEventListener("DOMContentLoaded", () => {
     const dateInput = document.getElementById("signing-date");
@@ -182,6 +186,9 @@ document.addEventListener("DOMContentLoaded", () => {
 // const costsInput = form.querySelector("input[name='costs']");
 
 let latestPDFBytesArray = [];
+
+let mergedBytes = null;
+
 
 const signaturePad = new SignaturePad(canvas);
 
@@ -588,6 +595,7 @@ async function generatePdf() {
     }
 
     saveBtn.disabled = false;
+    openBtn.disabled = false;
 }
 
 insuranceSelect.addEventListener('change', function () {
@@ -603,6 +611,8 @@ insuranceSelect.addEventListener('change', function () {
 
 careTakerSelect.addEventListener('change', function () {
     document.querySelector(".care_taker-info").style.display = this.checked ? "block" : "none";
+    document.querySelector(".care_taker-info").style.gap = this.checked ? "2rem" : "none";
+    // document.querySelector(".care_taker-info").style.margin = this.checked ? "2rem" : "none";
 });
 
 landlordSelect.addEventListener('change', function () {
@@ -628,88 +638,88 @@ form.addEventListener("reset", () => {
 
 // Reset diagnosis validation dynamically
 function setupDiagnosisValidationListeners() {
-  const checkboxes = [
-    document.getElementById("bed"),
-    document.getElementById("walk"),
-    document.getElementById("walker"),
-    document.getElementById("wheelchair"),
-    document.getElementById("always"),
-  ];
-  const otherDiagnosis = document.getElementById("other_diagnosis");
+    const checkboxes = [
+        document.getElementById("bed"),
+        document.getElementById("walk"),
+        document.getElementById("walker"),
+        document.getElementById("wheelchair"),
+        document.getElementById("always"),
+    ];
+    const otherDiagnosis = document.getElementById("other_diagnosis");
 
-  // When typing into the text field
-  otherDiagnosis.addEventListener("input", () => {
-    otherDiagnosis.setCustomValidity("");
-  });
+    // When typing into the text field
+    otherDiagnosis.addEventListener("input", () => {
+        otherDiagnosis.setCustomValidity("");
+    });
 
-  // When any checkbox is toggled
-  checkboxes.forEach(cb =>
-    cb.addEventListener("change", () => {
-      otherDiagnosis.setCustomValidity("");
-    })
-  );
+    // When any checkbox is toggled
+    checkboxes.forEach(cb =>
+        cb.addEventListener("change", () => {
+            otherDiagnosis.setCustomValidity("");
+        })
+    );
 }
 
 setupDiagnosisValidationListeners(); // Call once at the start
 
 function validateDiagnosis(e) {
     const checkboxes = [
-    document.getElementById("bed"),
-    document.getElementById("walk"),
-    document.getElementById("walker"),
-    document.getElementById("wheelchair"),
-    document.getElementById("always"),
-  ];
-  const otherDiagnosis = document.getElementById("other_diagnosis");
-  const isAnyChecked = checkboxes.some(cb => cb.checked);
-  const isTextFilled = otherDiagnosis.value.trim() !== "";
+        document.getElementById("bed"),
+        document.getElementById("walk"),
+        document.getElementById("walker"),
+        document.getElementById("wheelchair"),
+        document.getElementById("always"),
+    ];
+    const otherDiagnosis = document.getElementById("other_diagnosis");
+    const isAnyChecked = checkboxes.some(cb => cb.checked);
+    const isTextFilled = otherDiagnosis.value.trim() !== "";
 
-  console.log('aefe', isAnyChecked, isTextFilled);
+    console.log('aefe', isAnyChecked, isTextFilled);
 
-  if (!isAnyChecked && !isTextFilled) {
-    e.preventDefault();
+    if (!isAnyChecked && !isTextFilled) {
+        e.preventDefault();
 
-    // Show native-like warning near the visible text field
-    otherDiagnosis.setCustomValidity("Bitte mindestens eine Diagnose auswählen oder etwas eingeben.");
-    otherDiagnosis.reportValidity();
-    return false;
-  } else {
-    // Clear any previous custom message
-    otherDiagnosis.setCustomValidity("");
-    return true;
-  }
+        // Show native-like warning near the visible text field
+        otherDiagnosis.setCustomValidity("Bitte mindestens eine Diagnose auswählen oder etwas eingeben.");
+        otherDiagnosis.reportValidity();
+        return false;
+    } else {
+        // Clear any previous custom message
+        otherDiagnosis.setCustomValidity("");
+        return true;
+    }
 
 }
 
 function validateProducts(e) {
-  const productSection = document.getElementById("product-options");
-  const checkboxes = productSection.querySelectorAll('input[type="checkbox"]');
-  const isChecked = Array.from(checkboxes).some(cb => cb.checked);
+    const productSection = document.getElementById("product-options");
+    const checkboxes = productSection.querySelectorAll('input[type="checkbox"]');
+    const isChecked = Array.from(checkboxes).some(cb => cb.checked);
 
-  if (!isChecked) {
-    e.preventDefault();
+    if (!isChecked) {
+        e.preventDefault();
 
-    checkboxes.forEach(cb => {
-      cb.setCustomValidity("Bitte mindestens eine Leistung auswählen.");
-    });
+        checkboxes.forEach(cb => {
+            cb.setCustomValidity("Bitte mindestens eine Leistung auswählen.");
+        });
 
-    // Show validity message on the first checkbox so the user sees it
-    checkboxes[0].reportValidity();
-    return false;
-  } else {
-    // Clear custom validity on all checkboxes
-    checkboxes.forEach(cb => cb.setCustomValidity(""));
-    return true;
-  }
+        // Show validity message on the first checkbox so the user sees it
+        checkboxes[0].reportValidity();
+        return false;
+    } else {
+        // Clear custom validity on all checkboxes
+        checkboxes.forEach(cb => cb.setCustomValidity(""));
+        return true;
+    }
 }
 
 function setupProductValidationListeners() {
-  const checkboxes = document.querySelectorAll('#product-options input[type="checkbox"]');
-  checkboxes.forEach(cb => {
-    cb.addEventListener("change", () => {
-      checkboxes.forEach(c => c.setCustomValidity(""));
+    const checkboxes = document.querySelectorAll('#product-options input[type="checkbox"]');
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", () => {
+            checkboxes.forEach(c => c.setCustomValidity(""));
+        });
     });
-  });
 }
 setupProductValidationListeners();
 
@@ -717,16 +727,54 @@ form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!DEBUG_MODE && !validateDiagnosis(e)) return;
     if (!DEBUG_MODE && !validateProducts(e)) return;
+    
+    loadingOverlay.style.display = "flex"; // Show spinner
+
     try {
         await generatePdf();
-        const formData = getFormData();
-        let fileName = `${formData.last_name}_${formData.first_name}`;
-        const mergedBytes = await mergePDFs(latestPDFBytesArray);
-        const blob = new Blob([mergedBytes], { type: "application/pdf" });
-        const url = URL.createObjectURL(blob);
+        mergedBytes = await mergePDFs(latestPDFBytesArray);
 
-        if (isIos() && isInStandaloneMode()) {
-            // iOS PWA — trigger download
+        const formData = getFormData();
+        // let fileName = `${formData.last_name}_${formData.first_name}`;
+        // const blob = new Blob([mergedBytes], { type: "application/pdf" });
+        // const url = URL.createObjectURL(blob);
+
+    } catch (error) {
+        console.error("Error generating PDF:", error);
+    } finally {
+        loadingOverlay.style.display = "none"; // Hide spinner
+    }
+
+});
+
+openBtn.addEventListener("click", () => {
+    const blob = new Blob([mergedBytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+
+    if (isIos() && isInStandaloneMode()) {
+        // iOS PWA — trigger download
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${fileName}.pdf`;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        console.log("PDF download triggered in iOS PWA.");
+    } else {
+        // Regular browser — open in new tab
+        try {
+            // Try to open in new tab
+            const newTab = window.open(url, "_blank");
+            console.log("PDF loaded into previously opened tab.");
+            if (!newTab) {
+                throw new Error("Popup blocked or failed to open new tab.");
+            }
+        }
+        catch (error) {
+            // Fallback to download if new tab fails
+            console.log("Failed to open PDF in new tab, falling back to download.", error);
             const a = document.createElement("a");
             a.href = url;
             a.download = `${fileName}.pdf`;
@@ -734,17 +782,11 @@ form.addEventListener("submit", async (e) => {
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            console.log("PDF download triggered in iOS PWA.");
-        } else {
-            // Regular browser — open in new tab
-            window.open(url, "_blank");
-            console.log("PDF opened in new tab.");
+            console.log("PDF download triggered as fallback.");
+
         }
-    } catch (error) {
-        console.error("Error generating PDF:", error);
     }
 });
-
 // form.querySelectorAll("input[type='checkbox'], input[type='number']").forEach(input => {
 //     input.addEventListener("change", calculateCosts);
 // });
@@ -755,9 +797,11 @@ clearBtn.addEventListener("click", () => {
 });
 
 saveBtn.addEventListener("click", async () => {
+    loadingOverlay.style.display = "flex"; // Show spinner
+    
     try {
         await generatePdf();
-        const mergedBytes = await mergePDFs(latestPDFBytesArray);
+        mergedBytes = await mergePDFs(latestPDFBytesArray);
         const shortMergedBytes = await mergePDFs([latestPDFBytesArray[0], latestPDFBytesArray[latestPDFBytesArray.length - 1]]);
         const blob = new Blob([mergedBytes], { type: "application/pdf" });
         const blobShort = new Blob([shortMergedBytes], { type: "application/pdf" });
@@ -777,5 +821,7 @@ saveBtn.addEventListener("click", async () => {
         // saveAs(blob, "merged.pdf");
     } catch (error) {
         console.error("Error saving PDF:", error);
+    } finally {
+        loadingOverlay.style.display = "none"; // Hide spinner
     }
 });
