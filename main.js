@@ -4,7 +4,7 @@ import { getProductDefinitions } from "./productConfig.js";
 
 
 // CONSTANTS
-const DEBUG_MODE = true;
+const DEBUG_MODE = false;
 if (DEBUG_MODE) {
     const tag = document.createElement("div");
     tag.textContent = "DEBUG MODE: Validation Disabled";
@@ -121,15 +121,22 @@ const DUMMY_DATA = {
     DUMMY_DATA[`${key}_no`] = DUMMY_DATA[key] === false;
 });
 
+const angle_valve_type = "outside"; // "inside" or "outside"
+const raised_toilet_type = "wall"; // "stand" or "wall"
+const raised_toilet_dummy = false; // Whether raised toilet is requested
+const angle_valve_dummy = true; // Whether angle valve is requested
+
 const DUMMY_PRODUCT_DATA = {
     grab_bars: "true",
     grab_bars_count: "2",
     railings: true,
     railings_count: "1",
-    raised_toilet: false,
-    raised_toilet_type: "Standard",
-    angle_valve: true,
-    angle_valve_type: "Standard",
+    raised_toilet: raised_toilet_dummy,
+    raised_toilet_stand: raised_toilet_type === "stand" && raised_toilet_dummy,
+    raised_toilet_wall: raised_toilet_type === "wall" && raised_toilet_dummy,
+    angle_valve: angle_valve_dummy,
+    angle_valve_outside: angle_valve_type === "outside" && angle_valve_dummy,
+    angle_valve_inside: angle_valve_type === "inside" && angle_valve_dummy,
     shower_toilet: false,
     threshold_removal: true,
     threshold_removal_count: "1",
@@ -428,6 +435,15 @@ async function applySignatureToPdf(pdfDoc, fieldName, signaturePage) {
 
 function getProductData() {
     // return the productData object
+    const raised_toilet = document.querySelector('input[name="raised_toilet"]').checked;
+    const raised_toilet_type = document.querySelector('input[name="raised_toilet_type"]:checked')?.value || "";
+
+    const angle_valve = document.querySelector('input[name="angle_valve"]').checked
+    const angle_valve_type = document.querySelector('input[name="angle_valve_type"]:checked')?.value || "";
+
+    console.log("raisedToiletType:", raised_toilet_type);
+    console.log("angle_valve_type:", angle_valve_type);
+
 
     const productData = {
         // Grab bars and railings
@@ -438,12 +454,16 @@ function getProductData() {
         railings_count: document.querySelector('input[name="railings_count"]').value || '0',
 
         // Raised toilet
-        raised_toilet: document.querySelector('input[name="raised_toilet"]').checked,
-        raised_toilet_type: document.querySelector('input[name="raised_toilet_type"]:checked')?.value || "",
+        raised_toilet: raised_toilet,
+        // raised_toilet_type: document.querySelector('input[name="raised_toilet_type"]:checked')?.value || "",
+        raised_toilet_stand: raised_toilet_type === "stand" && raised_toilet,
+        raised_toilet_wall: raised_toilet_type === "wall" && raised_toilet,
 
         // Angle valve
         angle_valve: document.querySelector('input[name="angle_valve"]').checked,
-        angle_valve_type: document.querySelector('input[name="angle_valve_type"]:checked')?.value || "",
+        // angle_valve_type: document.querySelector('input[name="angle_valve_type"]:checked')?.value || "",
+        angle_valve_inside: angle_valve_type === "inside" && angle_valve,
+        angle_valve_outside: angle_valve_type === "outside" && angle_valve,
 
         // Other checkboxes with optional counts
         shower_toilet: document.querySelector('input[name="shower_toilet"]').checked,
@@ -725,7 +745,7 @@ form.addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!DEBUG_MODE && !validateDiagnosis(e)) return;
     if (!DEBUG_MODE && !validateProducts(e)) return;
-    
+
     loadingOverlay.style.display = "flex"; // Show spinner
 
     try {
@@ -796,7 +816,7 @@ clearBtn.addEventListener("click", () => {
 
 saveBtn.addEventListener("click", async () => {
     loadingOverlay.style.display = "flex"; // Show spinner
-    
+
     try {
         await generatePdf();
         mergedBytes = await mergePDFs(latestPDFBytesArray);
