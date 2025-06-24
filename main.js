@@ -610,13 +610,11 @@ insuranceSelect.addEventListener('change', function () {
 });
 
 careTakerSelect.addEventListener('change', function () {
-    document.querySelector(".care_taker-info").style.display = this.checked ? "block" : "none";
-    document.querySelector(".care_taker-info").style.gap = this.checked ? "2rem" : "none";
-    // document.querySelector(".care_taker-info").style.margin = this.checked ? "2rem" : "none";
+    document.querySelector(".care_taker-info").style.display = this.checked ? "flex" : "none";
 });
 
 landlordSelect.addEventListener('change', function () {
-    document.querySelector(".landlord-info").style.display = this.checked ? "block" : "none";
+    document.querySelector(".landlord-info").style.display = this.checked ? "flex" : "none";
 }
 );
 

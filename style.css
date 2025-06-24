@@ -248,9 +248,10 @@ canvas {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-#care_taker-container {
-    gap: 10px;
-    padding: 10px;
+.care_taker-info,
+.landlord-info {
+  flex-direction: column;
+  gap: 1rem; /* or 12px, 16px etc. */
 }
 
 /* #signature-pad {
